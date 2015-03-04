@@ -1,0 +1,237 @@
+#+TITLE: Emacs Initialization
+#+STARTUP: nofold hidestars oddeven indent
+#+OPTIONS: toc:nil
+
+* Packages
+#+begin_src emacs-lisp
+(package-initialize)
+(add-to-list 'package-archives
+             '("melpa" . "http://melpa.milkbox.net/packages/") t)
+#+end_src
+* Require
+#+begin_src emacs-lisp
+(require 'smart-tab)
+(require 'yasnippet)
+(require 'auto-complete-config)
+(require 'helm)
+(require 'helm-config)
+;;(require 'xcode-document-viewer)
+(require 'ensime)
+;(require 'evernote-mode)
+#+end_src
+* UI options
+#+begin_src emacs-lisp
+(setq inhibit-splash-screen t)
+(setq inhibit-startup-message t)
+(setq mouse-wheel-follow-mouse 't)
+(setq scroll-step 1)
+(menu-bar-mode 0)
+(tool-bar-mode 0)
+(scroll-bar-mode 0)
+
+;; scroll one line at a time (less "jumpy" than defaults)
+;;(setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
+;;(setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
+(setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
+(setq scroll-step 1) ;; keyboard scroll one line at a time
+#+end_src
+* Key Bindings
+** Helm
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-c h") 'helm-mini)
+(global-set-key (kbd "C-c g") 'helm-git-grep)
+(global-set-key (kbd "M-i") 'helm-imenu)
+;; Invoke `helm-git-grep' from isearch.
+(define-key isearch-mode-map (kbd "C-c g") 'helm-git-grep-from-isearch)
+;; Invoke `helm-git-grep' from other helm.
+(eval-after-load 'helm
+  '(define-key helm-map (kbd "C-c g") 'helm-git-grep-from-helm))
+#+end_src
+** Evernote
+#+begin_src emacs-lisp
+;(global-set-key "\C-cec" 'evernote-create-note)
+;(global-set-key "\C-ceo" 'evernote-open-note)
+;(global-set-key "\C-ces" 'evernote-search-notes)
+;(global-set-key "\C-ceS" 'evernote-do-saved-search)
+;(global-set-key "\C-cew" 'evernote-write-note)
+;(global-set-key "\C-cep" 'evernote-post-region)
+;(global-set-key "\C-ceb" 'evernote-browser)
+#+end_src
+** other
+#+begin_src emacs-lisp
+(global-set-key (kbd "M-/") 'hippie-expand)
+(global-set-key [pause] 'toggle-window-dedicated)
+(global-set-key [f5] 'recompile)
+(global-set-key [f6] 'rgrep)
+;(global-set-key [f12] 'sr-speedbar-toggle)
+(define-key global-map "\C-cc" 'org-capture)
+(global-set-key (kbd "C-x g") 'magit-status)
+(global-set-key "\C-xp" 'objc-headline)
+#+end_src
+* Modes and stuff
+#+begin_src emacs-lisp
+(helm-mode t)
+;(semantic-mode t)
+;(global-semantic-idle-scheduler-mode 0)
+;(global-semantic-idle-summary-mode t)
+;(global-semantic-idle-breadcrumbs-mode 0)
+;(global-semantic-idle-completions-mode 0)
+;(global-semantic-idle-local-symbol-highlight-mode 0)
+
+(show-paren-mode t)
+
+;(set-face-attribute 'default nil :font "Inconsolata" :height 160)
+
+(setq dired-listing-switches "-lgG")
+
+(add-hook 'c-mode-common-hook
+  '(lambda ()
+     (setq glasses-face "bold")
+     (setq glasses-separator nil)
+     (hs-minor-mode t)
+))
+
+(global-smart-tab-mode t)
+
+;; handle output from iarbuild
+(add-hook 'compilation-mode-hook
+  '(lambda ()
+     (setq split-width-threshold nil)
+     (setq compilation-window-height 12)
+     (setq compilation-scroll-output 'first-error)
+     (add-to-list 'compilation-error-regexp-alist 'iarbuild)
+     (add-to-list 'compilation-error-regexp-alist-alist
+       '(iarbuild "^\\(.*\\)(\\([0-9]+\\))" 1 2))))
+
+(add-hook 'hs-minor-mode-hook
+  '(lambda ()
+     (hs-hide-initial-comment-block)
+     (local-set-key (kbd "C-<tab>") 'hs-toggle-hiding)))
+
+(setq hippie-expand-try-functions-list
+  '(try-expand-dabbrev
+    try-expand-dabbrev-all-buffers
+    try-expand-dabbrev-from-kill
+    try-complete-file-name-partially
+    try-complete-file-name
+    try-expand-all-abbrevs
+    try-expand-list
+    try-expand-line
+    try-complete-lisp-symbol-partially
+    try-complete-lisp-symbol))
+
+(setq browse-url-browser-function 'w3m)
+
+(autoload 'imaxima "imaxima" "Image support for Maxima." t)
+#+end_src
+* Toggle Dedicated Window
+#+begin_src emacs-lisp
+;; Toggle window dedication
+(defun toggle-window-dedicated ()
+  "Toggle whether the current active window is dedicated or not"
+  (interactive)
+  (message 
+   (if (let (window (get-buffer-window (current-buffer)))
+         (set-window-dedicated-p window 
+          (not (window-dedicated-p window))))
+      "Window '%s' is dedicated"
+      "Window '%s' is normal")
+   (current-buffer)))
+#+end_src
+(setq browse-url-browser-function 'w3m)
+* YASnippet
+#+begin_src
+;; yasnippet
+(setq yas/trigger-key (kbd "C-c <kp-multiply>"))
+;;(yas/initialize)
+
+;; This is where your snippets will lie.
+(setq yas/root-directory '("~/.emacs.d/snippets"))
+(mapc 'yas/load-directory yas/root-directory)
+#+end_src
+* Auto Complete
+#+begin_src emacs-lisp
+;; auto-complete
+(add-to-list 'ac-dictionary-directories "~/.emacs.d/elpa/auto-complete-1.4.20110207/dict")
+
+(setq-default ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-dictionary ac-source-words-in-same-mode-buffers))
+(add-hook 'emacs-lisp-mode-hook 'ac-emacs-lisp-mode-setup)
+(add-hook 'c-mode-common-hook 'ac-cc-mode-setup)
+(add-hook 'ruby-mode-hook 'ac-ruby-mode-setup)
+(add-hook 'css-mode-hook 'ac-css-mode-setup)
+(add-hook 'auto-complete-mode-hook 'ac-common-setup)
+(global-auto-complete-mode t)
+(add-to-list 'ac-modes 'objc-mode)
+#+end_src
+* Objective-C
+#+begin_src emacs-lisp
+(defvar helm-c-source-objc-headline
+  '((name . "Objective-C Headline")
+    (headline  "^[-+@]\\|^#pragma mark")))
+
+(defun objc-headline ()
+  (interactive)
+  ;; Set to 500 so it is displayed even if all methods are not narrowed down.
+  (let ((helm-candidate-number-limit 500))
+    (helm-other-buffer '(helm-c-source-objc-headline)
+                           "*ObjC Headline*")))
+
+(add-to-list 'load-path "~/.emacs.d/lisp")
+
+;;(setq xcdoc:document-path "/Applications/Xcode.app/Contents/Developer/Documentation/DocSets/com.apple.adc.documentation.AppleOSX10_8.CoreReference.docset")
+;;(setq xcdoc:open-w3m-other-buffer t)
+
+;; --- Obj-C switch between header and source ---
+
+(defun objc-in-header-file ()
+  (let* ((filename (buffer-file-name))
+         (extension (car (last (split-string filename "\\.")))))
+    (string= "h" extension)))
+
+(defun objc-jump-to-extension (extension)
+  (let* ((filename (buffer-file-name))
+         (file-components (append (butlast (split-string filename
+                                                         "\\."))
+                                  (list extension))))
+    (find-file (mapconcat 'identity file-components "."))))
+
+;;; Assumes that Header and Source file are in same directory
+(defun objc-jump-between-header-source ()
+  (interactive)
+  (if (objc-in-header-file)
+      (objc-jump-to-extension "m")
+    (objc-jump-to-extension "h")))
+
+(defun objc-mode-customizations ()
+  (define-key objc-mode-map (kbd "C-c t") 'objc-jump-between-header-source))
+
+(add-hook 'objc-mode-hook 'objc-mode-customizations)
+
+(put 'upcase-region 'disabled nil)
+#+end_src
+* Path
+#+begin_src emacs-lisp
+;; This needs fixed
+(let ((add-path "/usr/local/sbin:/usr/local/bin:/opt/local/sbin:/opt/local/bin:$HOME/Library/Haskell/bin:"))
+  (setenv "PATH" (concat (getenv "PATH") add-path))
+  (setq exec-path (append exec-path `(,add-path)))
+
+  (defun eshell-mode-hook-func ()
+    (setq eshell-path-env (concat add-path eshell-path-env))
+    (setenv "PATH" (concat add-path (getenv "PATH")))
+    (define-key eshell-mode-map (kbd "M-s") 'other-window-or-split))
+  
+  (add-hook 'eshell-mode-hook 'eshell-mode-hook-func)
+)
+#+end_src
+* Evernote Mode
+#+begin_src emacs-lisp
+;(setq evernote-username "hackerfoo") ; optional: you can use this username as default.
+;(setq evernote-enml-formatter-command '("w3m" "-dump" "-I" "UTF8" "-O" "UTF8")) ; option
+#+end_src
+* Projectile
+#+begin_src emacs-lisp
+(projectile-global-mode)
+(setq projectile-completion-system 'helm)
+(helm-projectile-on)
+#+end_src
