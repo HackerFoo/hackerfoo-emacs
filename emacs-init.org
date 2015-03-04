@@ -42,10 +42,10 @@
     (define-key isearch-mode-map (kbd "C-c g") 'helm-git-grep-from-isearch)
     ;; Invoke `helm-git-grep' from other helm.
     (eval-after-load 'helm
-      '(define-key helm-map (kbd "C-c g") 'helm-git-grep-from-helm))
+      '(define-key helm-map (kbd "C-c g") 'helm-git-grep-from-helm))))
 
-    (helm-mode t)))
-
+(req-package helm
+  :init (helm-mode t))
 #+end_src
 ** Magit
 #+begin_src emacs-lisp
@@ -104,6 +104,7 @@
   (req-package xcode-document-viewer))
 
 (req-package ensime)
+(req-package gruber-darker-theme)
 #+end_src
 * UI options
 #+begin_src emacs-lisp
