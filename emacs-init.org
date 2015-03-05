@@ -83,6 +83,7 @@
     (add-hook 'auto-complete-mode-hook 'ac-common-setup)
     (global-auto-complete-mode t)
     (add-to-list 'ac-modes 'objc-mode)))
+(req-package auto-complete)
 #+end_src
 ** Projectile
 #+begin_src emacs-lisp
@@ -201,6 +202,19 @@
 ;;   
 ;;   (add-hook 'eshell-mode-hook 'eshell-mode-hook-func)
 ;; )
+#+end_src
+* TeX
+#+begin_src
+(setq TeX-auto-save t)
+(setq TeX-parse-self t)
+(setq-default TeX-master nil)
+(add-hook 'LaTeX-mode-hook 'visual-line-mode)
+(add-hook 'LaTeX-mode-hook 'flyspell-mode)
+(add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
+(add-hook 'LaTeX-mode-hook 'turn-on-reftex)
+(setq reftex-plug-into-AUCTeX t)
+(setq TeX-PDF-mode t)
+(set-default 'preview-scale-function 2.0)
 #+end_src
 * Finally
 #+begin_src emacs-lisp
