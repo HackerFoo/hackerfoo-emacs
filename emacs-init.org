@@ -110,6 +110,19 @@
   (req-package exec-path-from-shell
     :init
     (exec-path-from-shell-initialize)))
+(req-package purpose
+  :pre-load
+  (progn
+    (fset 'ido-find-file (symbol-function 'find-file))
+    (fset 'ido-find-file-other-window (symbol-function 'find-file-other-window))
+    (fset 'ido-find-file-other-frame (symbol-function 'find-file-other-frame)))
+  :init (purpose-mode t))
+(req-package golden-ratio
+  :init (golden-ratio-mode t))
+#+end_src
+** Finally
+#+begin_src emacs-lisp
+(req-package-finish)
 #+end_src
 * UI options
 #+begin_src emacs-lisp
@@ -181,6 +194,8 @@
 (setq-default indent-tabs-mode nil)
 (setq c-default-style "linux")
 (setq c-basic-offset 2)
+(winner-mode t)
+(windmove-default-keybindings)
 #+end_src
 * Toggle Dedicated Window
 #+begin_src emacs-lisp
@@ -223,8 +238,4 @@
 (setq reftex-plug-into-AUCTeX t)
 (setq TeX-PDF-mode t)
 (set-default 'preview-scale-function 2.0)
-#+end_src
-* Finally
-#+begin_src emacs-lisp
-(req-package-finish)
 #+end_src
