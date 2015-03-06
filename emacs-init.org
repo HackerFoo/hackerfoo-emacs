@@ -106,6 +106,10 @@
 
 (req-package ensime)
 (req-package gruber-darker-theme)
+(when (memq window-system '(mac ns))
+  (req-package exec-path-from-shell
+    :init
+    (exec-path-from-shell-initialize)))
 #+end_src
 * UI options
 #+begin_src emacs-lisp
@@ -173,6 +177,10 @@
 
 (if (executable-find "w3m")
   (setq browse-url-browser-function 'w3m))
+
+(setq-default indent-tabs-mode nil)
+(setq c-default-style "linux")
+(setq c-basic-offset 2)
 #+end_src
 * Toggle Dedicated Window
 #+begin_src emacs-lisp
