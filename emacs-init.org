@@ -122,6 +122,15 @@
 
 (req-package golden-ratio
   :init (golden-ratio-mode t))
+
+(req-package smart-mode-line
+  :init
+  (progn
+    (setq sml/theme 'respectful)
+    (sml/setup)))
+
+(req-package expand-region
+  :bind (("C-=" . er/expand-region)))
 #+end_src
 ** Finally
 #+begin_src emacs-lisp
