@@ -131,6 +131,16 @@
 
 (req-package expand-region
   :bind (("C-=" . er/expand-region)))
+
+(req-package flycheck
+  :init
+  (progn
+    (add-hook 'after-init-hook #'global-flycheck-mode)
+    (defun flycheck-gcc-include-local-dir ()
+      "Add the current dir to the gcc checker include list"
+      (if (derived-mode-p 'c-mode 'c++-mode)
+        (add-to-list 'flycheck-gcc-include-path (file-name-directory (buffer-file-name)))))
+    (add-hook 'flycheck-before-syntax-check-hook 'flycheck-gcc-include-local-dir)))
 #+end_src
 ** Finally
 #+begin_src emacs-lisp
@@ -158,6 +168,12 @@
 (global-set-key [f6] 'rgrep)
 (global-set-key (kbd "C-c c") 'org-capture)
 (global-set-key (kbd "C-x p") 'objc-headline)
+
+(defun revert-buffer-no-confirm ()
+  "Revert buffer without confirmation."
+  (interactive) (revert-buffer t t))
+
+(global-set-key (kbd "C-c v") 'revert-buffer-no-confirm)
 #+end_src
 * Misc settings
 #+begin_src emacs-lisp
