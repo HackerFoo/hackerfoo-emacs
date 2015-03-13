@@ -19,7 +19,7 @@
 ** YASnippet
 #+begin_src emacs-lisp
 (req-package yasnippet
-  :init
+  :config
   (progn
     ;; yasnippet
     (setq yas/trigger-key (kbd "C-c <kp-multiply>"))
@@ -36,16 +36,15 @@
   :bind (("C-c h" . helm-mini)
          ("C-c g" . helm-get-grep)
          ("M-i" . helm-imenu))
-  :init
+  :config
   (progn
     ;; Invoke `helm-git-grep' from isearch.
     (define-key isearch-mode-map (kbd "C-c g") 'helm-git-grep-from-isearch)
     ;; Invoke `helm-git-grep' from other helm.
-    (eval-after-load 'helm
-      '(define-key helm-map (kbd "C-c g") 'helm-git-grep-from-helm))))
+    (define-key helm-map (kbd "C-c g") 'helm-git-grep-from-helm)))
 
 (req-package helm
-  :init (helm-mode t))
+  :config (helm-mode t))
 #+end_src
 ** Magit
 #+begin_src emacs-lisp
@@ -62,7 +61,7 @@
          ("C-c e w" . evernote-write-note)
          ("C-c e p" . evernote-post-region)
          ("C-c e b" . evernote-browser))
-  :init
+  :config
   (progn
     (setq evernote-username "hackerfoo") ; optional: you can use this username as default.
     (setq evernote-enml-formatter-command '("w3m" "-dump" "-I" "UTF8" "-O" "UTF8")) ; option
@@ -71,7 +70,7 @@
 ** Auto Complete
 #+begin_src emacs-lisp
 (req-package auto-complete-config
-  :init
+  :config
   (progn
     (add-to-list 'ac-dictionary-directories "~/.emacs.d/elpa/auto-complete-1.4.20110207/dict")
     
@@ -88,10 +87,10 @@
 ** Projectile
 #+begin_src emacs-lisp
 (req-package projectile
-  :init (projectile-global-mode))
+  :config (projectile-global-mode))
 (req-package helm-projectile
   :require (helm projectile)
-  :init
+  :config
   (progn
     (setq projectile-completion-system 'helm)
     (helm-projectile-on)))
@@ -108,7 +107,7 @@
 (req-package gruber-darker-theme)
 (when (memq window-system '(mac ns))
   (req-package exec-path-from-shell
-    :init
+    :config
     (exec-path-from-shell-initialize)))
 
 ; I cannot get purpose to work with helm correctly
@@ -121,10 +120,10 @@
 ;   :init (purpose-mode t))
 
 (req-package golden-ratio
-  :init (golden-ratio-mode t))
+  :config (golden-ratio-mode t))
 
 (req-package smart-mode-line
-  :init
+  :config
   (progn
     (setq sml/theme 'respectful)
     (sml/setup)))
@@ -133,14 +132,17 @@
   :bind (("C-=" . er/expand-region)))
 
 (req-package flycheck
-  :init
+  :require (flycheck-pos-tip flycheck-color-mode-line)
+  :config
   (progn
     (add-hook 'after-init-hook #'global-flycheck-mode)
     (defun flycheck-gcc-include-local-dir ()
       "Add the current dir to the gcc checker include list"
       (if (derived-mode-p 'c-mode 'c++-mode)
         (add-to-list 'flycheck-gcc-include-path (file-name-directory (buffer-file-name)))))
-    (add-hook 'flycheck-before-syntax-check-hook 'flycheck-gcc-include-local-dir)))
+    (add-hook 'flycheck-before-syntax-check-hook 'flycheck-gcc-include-local-dir)
+    (setq flycheck-display-errors-function #'flycheck-pos-tip-error-messages)
+    (add-hook 'flycheck-mode-hook 'flycheck-color-mode-line-mode)))
 #+end_src
 ** Finally
 #+begin_src emacs-lisp
