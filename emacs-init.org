@@ -4,6 +4,7 @@
 
 * Initial stuff
 #+begin_src emacs-lisp
+(require 'eieio)
 (package-initialize)
 (add-to-list 'package-archives
              '("melpa" . "http://melpa.milkbox.net/packages/") t)
