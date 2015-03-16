@@ -14,7 +14,7 @@
 ** Smart Tab
 #+begin_src emacs-lisp
 (req-package smart-tab
-  :init (global-smart-tab-mode t))
+  :config (global-smart-tab-mode t))
 #+end_src
 ** YASnippet
 #+begin_src emacs-lisp
