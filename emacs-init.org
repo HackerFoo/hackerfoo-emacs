@@ -126,8 +126,14 @@
 (req-package expand-region
   :bind (("C-=" . er/expand-region)))
 
+(req-package ycmd
+  :config
+  (progn
+    (set-variable 'ycmd-server-command '("python" "/opt/ycmd/ycmd"))
+    (add-hook 'c-mode-hook 'ycmd-mode)
+    (add-hook 'c++-mode-hook 'ycmd-mode)))
+
 (req-package flycheck
-  :require (flycheck-pos-tip flycheck-color-mode-line)
   :config
   (progn
     (add-hook 'after-init-hook #'global-flycheck-mode)
@@ -136,8 +142,22 @@
       (if (derived-mode-p 'c-mode 'c++-mode)
         (add-to-list 'flycheck-gcc-include-path (file-name-directory (buffer-file-name)))))
     (add-hook 'flycheck-before-syntax-check-hook 'flycheck-gcc-include-local-dir)
-    (setq flycheck-display-errors-function #'flycheck-pos-tip-error-messages)
-    (add-hook 'flycheck-mode-hook 'flycheck-color-mode-line-mode)))
+))
+
+(req-package flycheck-pos-tip
+  :require flycheck
+  :config
+    (setq flycheck-display-errors-function #'flycheck-pos-tip-error-messages))
+
+(req-package flycheck-color-mode-line
+  :require flycheck
+  :config
+    (add-hook 'flycheck-mode-hook 'flycheck-color-mode-line-mode))
+
+(req-package flycheck-ycmd
+  :require (flycheck ycmd)
+  :config
+    (flycheck-ycmd-setup))
 
 (req-package ggtags
   :config
@@ -228,6 +248,23 @@
 (setq c-basic-offset 2)
 (winner-mode t)
 (windmove-default-keybindings)
+
+(setq org-src-fontify-natively t)
+
+;; save automatically
+(setq auto-save-visited-file-name t
+      auto-save-interval 1
+      auto-save-timeout 1)
+
+(defun full-auto-save ()
+  (interactive)
+  (save-excursion
+	(dolist (buf (buffer-list))
+	  (set-buffer buf)
+	  (if (and (buffer-file-name) (buffer-modified-p))
+		  (basic-save-buffer)))))
+(add-hook 'auto-save-hook 'full-auto-save)
+
 #+end_src
 * Toggle Dedicated Window
 #+begin_src emacs-lisp
