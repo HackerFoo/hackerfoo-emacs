@@ -83,7 +83,7 @@
     (add-hook 'ruby-mode-hook 'ac-ruby-mode-setup)
     (add-hook 'css-mode-hook 'ac-css-mode-setup)
     (add-hook 'auto-complete-mode-hook 'ac-common-setup)
-    (global-auto-complete-mode t)
+    ;(global-auto-complete-mode t)
     (add-to-list 'ac-modes 'objc-mode)))
 
 (req-package auto-complete)
@@ -133,7 +133,8 @@
   :config
   (progn
     (set-variable 'ycmd-server-command '("python" "/opt/ycmd/ycmd"))
-    (set-veriable 'ycmd-parse-conditions '(save new-line idle-change mode-enabled))
+    (set-variable 'ycmd-idle-change-delay 0.1)
+    (set-variable 'ycmd-parse-conditions '(save new-line idle-change mode-enabled))
     (add-hook 'c-mode-hook 'ycmd-mode)
     (add-hook 'c++-mode-hook 'ycmd-mode)))
 
@@ -174,7 +175,17 @@
 
 (req-package company
   :config
-  (add-hook 'after-init-hook 'global-company-mode))
+  (add-hook 'after-init-hook 'global-company-mode)
+  (custom-set-faces
+   '(company-preview ((t (:underline t))))
+   '(company-preview-common ((t (:inherit company-preview :foreground "deep sky blue"))))
+   '(company-scrollbar-bg ((t (:inherit company-tooltip :background "deep sky blue"))))
+   '(company-scrollbar-fg ((t (:background "white"))))
+   '(company-tooltip ((t (:background "gray30" :foreground "white"))))
+   '(company-tooltip-annotation ((t (:inherit company-tooltip :foreground "deep sky blue"))))
+   '(company-tooltip-common ((t (:inherit company-tooltip :weight bold))))
+   '(company-tooltip-common-selection ((t (:inherit company-tooltip-selection :weight bold))))
+   '(company-tooltip-selection ((t (:inherit company-tooltip :background "steel blue"))))))
 
 (req-package company-ycmd
   :require (company ycmd)
