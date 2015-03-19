@@ -133,7 +133,7 @@
   :config
   (progn
     (set-variable 'ycmd-server-command '("python" "/opt/ycmd/ycmd"))
-    (set-variable 'ycmd-idle-change-delay 0.1)
+    (set-variable 'ycmd-idle-change-delay 0.5)
     (set-variable 'ycmd-parse-conditions '(save new-line idle-change mode-enabled))
     (add-hook 'c-mode-hook 'ycmd-mode)
     (add-hook 'c++-mode-hook 'ycmd-mode)))
@@ -176,6 +176,7 @@
 (req-package company
   :config
   (add-hook 'after-init-hook 'global-company-mode)
+  (setq company-idle-delay 0)
   (custom-set-faces
    '(company-preview ((t (:underline t))))
    '(company-preview-common ((t (:inherit company-preview :foreground "deep sky blue"))))
