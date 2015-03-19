@@ -165,6 +165,15 @@
           (lambda ()
             (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
               (ggtags-mode 1)))))
+
+(req-package company
+  :config
+  (add-hook 'after-init-hook 'global-company-mode))
+
+(req-package company-ycmd
+  :require company
+  :config
+  (company-ycmd-setup))
 #+end_src
 ** Finally
 #+begin_src emacs-lisp
