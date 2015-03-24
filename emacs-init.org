@@ -10,6 +10,11 @@
              '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (add-to-list 'load-path "~/.emacs.d/lisp")
 (require 'req-package)
+
+(setq use-rtags t)
+(setq use-irony nil)
+(setq use-ycmd t)
+
 #+end_src
 * Packages
 ** Smart Tab
@@ -129,14 +134,111 @@
 (req-package expand-region
   :bind (("C-=" . er/expand-region)))
 
-(req-package ycmd
-  :config
+(if use-rtags
+  (req-package rtags
+    :config
+    (progn
+    (defun use-rtags (&optional useFileManager)
+      (and (rtags-executable-find "rc")
+           (cond ((and (not (eq major-mode 'c++-mode))
+                       (not (eq major-mode 'c-mode))) (rtags-has-filemanager))
+                 (useFileManager (rtags-has-filemanager))
+                 (t (rtags-is-indexed)))))
+
+    (defun tags-find-symbol-at-point (&optional prefix)
+      (interactive "P")
+      (if (and (not (rtags-find-symbol-at-point prefix)) rtags-last-request-not-indexed)
+          (gtags-find-tag)))
+    (defun tags-find-references-at-point (&optional prefix)
+      (interactive "P")
+      (if (and (not (rtags-find-references-at-point prefix)) rtags-last-request-not-indexed)
+          (gtags-find-rtag)))
+    (defun tags-find-symbol ()
+      (interactive)
+      (call-interactively (if (use-rtags) 'rtags-find-symbol 'gtags-find-symbol)))
+    (defun tags-find-references ()
+      (interactive)
+      (call-interactively (if (use-rtags) 'rtags-find-references 'gtags-find-rtag)))
+    (defun tags-find-file ()
+      (interactive)
+      (call-interactively (if (use-rtags t) 'rtags-find-file 'gtags-find-file)))
+    (defun tags-imenu ()
+      (interactive)
+      (call-interactively (if (use-rtags t) 'rtags-imenu 'helm-imenu)))
+
+    (define-key c-mode-base-map (kbd "M-.") (function tags-find-symbol-at-point))
+    (define-key c-mode-base-map (kbd "M-,") (function tags-find-references-at-point))
+    (define-key c-mode-base-map (kbd "M-;") (function tags-find-file))
+    (define-key c-mode-base-map (kbd "C-.") (function tags-find-symbol))
+    (define-key c-mode-base-map (kbd "C-,") (function tags-find-references))
+    (define-key c-mode-base-map (kbd "C-<") (function rtags-find-virtuals-at-point))
+    (define-key c-mode-base-map (kbd "M-i") (function tags-imenu))
+
+    (define-key global-map (kbd "M-.") (function tags-find-symbol-at-point))
+    (define-key global-map (kbd "M-,") (function tags-find-references-at-point))
+    (define-key global-map (kbd "M-;") (function tags-find-file))
+    (define-key global-map (kbd "C-.") (function tags-find-symbol))
+    (define-key global-map (kbd "C-,") (function tags-find-references))
+    (define-key global-map (kbd "C-<") (function rtags-find-virtuals-at-point))
+    (define-key global-map (kbd "M-i") (function tags-imenu)))))
+
+(if use-ycmd
   (progn
-    (set-variable 'ycmd-server-command '("python" "/opt/ycmd/ycmd"))
-    (set-variable 'ycmd-idle-change-delay 0.5)
-    (set-variable 'ycmd-parse-conditions '(save new-line idle-change mode-enabled))
-    (add-hook 'c-mode-hook 'ycmd-mode)
-    (add-hook 'c++-mode-hook 'ycmd-mode)))
+    (req-package ycmd
+      :config
+      (progn
+        (set-variable 'ycmd-server-command '("python" "/opt/ycmd/ycmd"))
+        (set-variable 'ycmd-idle-change-delay 0.5)
+        (set-variable 'ycmd-parse-conditions '(save new-line idle-change mode-enabled))
+        (add-hook 'c-mode-hook 'ycmd-mode)
+        (add-hook 'c++-mode-hook 'ycmd-mode)))
+
+    (req-package flycheck-ycmd
+      :require (flycheck ycmd)
+      :config
+      (flycheck-ycmd-setup))
+
+    (req-package company-ycmd
+      :require (company ycmd)
+      :config
+      (company-ycmd-setup))))
+
+(if use-irony
+  (progn
+    (req-package irony
+      :config
+      (progn
+        (add-hook 'c++-mode-hook 'irony-mode)
+        (add-hook 'c-mode-hook 'irony-mode)
+        (add-hook 'objc-mode-hook 'irony-mode)
+
+        ;; replace the `completion-at-point' and `complete-symbol' bindings in
+        ;; irony-mode's buffers by irony-mode's function
+        (defun my-irony-mode-hook ()
+          (define-key irony-mode-map [remap completion-at-point]
+            'irony-completion-at-point-async)
+          (define-key irony-mode-map [remap complete-symbol]
+            'irony-completion-at-point-async))
+        (add-hook 'irony-mode-hook 'my-irony-mode-hook)
+        (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)))
+
+    (req-package company-irony
+      :require (company irony)
+      :config
+      (progn
+        (add-to-list 'company-backends 'company-irony)
+        (add-hook 'irony-mode-hook 'company-irony-setup-begin-commands)))
+
+    (req-package flycheck-irony
+      :require (flycheck irony)
+      :config
+       (add-hook 'flycheck-mode-hook #'flycheck-irony-setup))
+
+    (req-package irony-eldoc
+      :require (irony eldoc)
+      :config
+      (add-hook 'irony-mode-hook 'irony-eldoc))
+))
 
 (req-package flycheck
   :config
@@ -161,17 +263,13 @@
   :config
   (add-hook 'flycheck-mode-hook 'flycheck-color-mode-line-mode))
 
-(req-package flycheck-ycmd
-  :require (flycheck ycmd)
-  :config
-  (flycheck-ycmd-setup))
-
-(req-package ggtags
-  :config
-  (add-hook 'c-mode-common-hook
-            (lambda ()
-              (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
-                (ggtags-mode 1)))))
+(if (not use-rtags)
+  (req-package ggtags
+    :config
+    (add-hook 'c-mode-common-hook
+              (lambda ()
+                (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
+                  (ggtags-mode 1))))))
 
 (req-package company
   :config
@@ -188,15 +286,10 @@
    '(company-tooltip-common-selection ((t (:inherit company-tooltip-selection :weight bold))))
    '(company-tooltip-selection ((t (:inherit company-tooltip :background "steel blue"))))))
 
-(req-package company-ycmd
-  :require (company ycmd)
-  :config
-  (company-ycmd-setup))
-
-(req-package company-quickhelp
-  :require (company pos-tip)
-  :config
-  (company-quickhelp-mode 1))
+;; (req-package company-quickhelp
+;;   :require (company pos-tip)
+;;   :config
+;;   (company-quickhelp-mode 1))
 #+end_src
 ** Finally
 #+begin_src emacs-lisp
