@@ -286,6 +286,13 @@
    '(company-tooltip-common-selection ((t (:inherit company-tooltip-selection :weight bold))))
    '(company-tooltip-selection ((t (:inherit company-tooltip :background "steel blue"))))))
 
+(req-package readline-complete
+  :require company
+  :config
+  (progn
+    (push 'company-readline company-backends)))
+;    (add-hook 'rlc-no-readline-hook (lambda () (company-mode -1)))))
+
 ;; (req-package company-quickhelp
 ;;   :require (company pos-tip)
 ;;   :config
