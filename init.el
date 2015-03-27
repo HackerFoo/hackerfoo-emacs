@@ -281,10 +281,25 @@
     (push 'company-readline company-backends)))
 ;    (add-hook 'rlc-no-readline-hook (lambda () (company-mode -1)))))
 
-;; (req-package company-quickhelp
-;;   :require (company pos-tip)
-;;   :config
-;;   (company-quickhelp-mode 1))
+(req-package company-quickhelp
+  :require (company pos-tip)
+  :config
+  (company-quickhelp-mode 1))
+
+(req-package auctex
+  :config
+  (progn
+    (setq TeX-auto-save t)
+    (setq TeX-parse-self t)
+    (setq-default TeX-master nil)
+    (add-hook 'LaTeX-mode-hook 'visual-line-mode)
+    (add-hook 'LaTeX-mode-hook 'flyspell-mode)
+    (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
+    (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
+    (setq reftex-plug-into-AUCTeX t)
+    (setq TeX-PDF-mode t)
+    (set-default 'preview-scale-function 2.0)))
+
 
 (req-package-finish)
 
@@ -358,58 +373,22 @@
 (if (executable-find "w3m")
   (setq browse-url-browser-function 'w3m))
 
-(setq-default indent-tabs-mode nil)
-(setq c-default-style "linux")
-(setq c-basic-offset 2)
+
+(custom-set-variables
+  '(indent-tabs-mode nil)
+  '(c-default-style "linux")
+  '(c-basic-offset 2)
+  '(org-src-fontify-natively t))
+
 (winner-mode t)
 (windmove-default-keybindings)
-
-(setq org-src-fontify-natively t)
-
-;; save automatically
-; (setq auto-save-visited-file-name t
-;       auto-save-interval 1
-;       auto-save-timeout 1)
-;
-; (defun full-auto-save ()
-;   (interactive)
-;   (save-excursion
-;       (dolist (buf (buffer-list))
-;         (set-buffer buf)
-;         (if (and (buffer-file-name) (buffer-modified-p))
-;                 (basic-save-buffer)))))
-; (add-hook 'auto-save-hook 'full-auto-save)
-
-;;; Toggle window dedication:
-(defun toggle-window-dedicated ()
-  "Toggle whether the current active window is dedicated or not."
-  (interactive)
-  (message
-   (if (let (window (get-buffer-window (current-buffer)))
-         (set-window-dedicated-p window
-          (not (window-dedicated-p window))))
-      "Window '%s' is dedicated"
-      "Window '%s' is normal")
-   (current-buffer)))
-
-;;; TeX:
-(setq TeX-auto-save t)
-(setq TeX-parse-self t)
-(setq-default TeX-master nil)
-(add-hook 'LaTeX-mode-hook 'visual-line-mode)
-(add-hook 'LaTeX-mode-hook 'flyspell-mode)
-(add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
-(add-hook 'LaTeX-mode-hook 'turn-on-reftex)
-(setq reftex-plug-into-AUCTeX t)
-(setq TeX-PDF-mode t)
-(set-default 'preview-scale-function 2.0)
 
 ;;; Imenu:
 (require 'imenu)
 (setq imenu-auto-rescan t)
 
 ;; Local Variables:
-;; imenu-generic-expression: (("Section" "^\\s<+\\s-+\\(.+\\):$" 1) ("Package" "^(req-package \\(\\S-+\\)$" 1))
+;; imenu-generic-expression: (("Section" "^;;;\\s-+\\(.+\\):\\s-*$" 1) ("Package" "^(req-package \\([a-z-]+\\).*$" 1))
 ;; End:
 
 (provide 'init)
