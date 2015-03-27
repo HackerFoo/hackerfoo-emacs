@@ -286,20 +286,19 @@
   :config
   (company-quickhelp-mode 1))
 
-(req-package auctex
-  :config
-  (progn
-    (setq TeX-auto-save t)
-    (setq TeX-parse-self t)
-    (setq-default TeX-master nil)
-    (add-hook 'LaTeX-mode-hook 'visual-line-mode)
-    (add-hook 'LaTeX-mode-hook 'flyspell-mode)
-    (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
-    (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
-    (setq reftex-plug-into-AUCTeX t)
-    (setq TeX-PDF-mode t)
-    (set-default 'preview-scale-function 2.0)))
-
+; req-package auctex
+;  :config
+;  (progn
+;    (setq TeX-auto-save t)
+;    (setq TeX-parse-self t)
+;    (setq-default TeX-master nil)
+;    (add-hook 'LaTeX-mode-hook 'visual-line-mode)
+;    (add-hook 'LaTeX-mode-hook 'flyspell-mode)
+;    (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
+;    (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
+;    (setq reftex-plug-into-AUCTeX t)
+;    (setq TeX-PDF-mode t)
+;    (set-default 'preview-scale-function 2.0)))
 
 (req-package-finish)
 
@@ -373,12 +372,12 @@
 (if (executable-find "w3m")
   (setq browse-url-browser-function 'w3m))
 
+(setq-default
+  indent-tabs-mode nil
+  c-default-style "linux"
+  c-basic-offset 2)
 
-(custom-set-variables
-  '(indent-tabs-mode nil)
-  '(c-default-style "linux")
-  '(c-basic-offset 2)
-  '(org-src-fontify-natively t))
+(setq-default org-src-fontify-natively t)
 
 (winner-mode t)
 (windmove-default-keybindings)
