@@ -27,14 +27,10 @@
 (req-package yasnippet
   :config
   (progn
-    ;; yasnippet
-    (setq yas/trigger-key (kbd "C-c <kp-multiply>"))
-    ;;(yas/initialize)
-
-    ;; This is where your snippets will lie.
+    (yas/initialize)
     (setq yas/root-directory '("~/.emacs.d/snippets"))
     (mapc 'yas/load-directory yas/root-directory)
-  ))
+    (yas-global-mode 1)))
 
 (req-package helm-config
   :require helm
