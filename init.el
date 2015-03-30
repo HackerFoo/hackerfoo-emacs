@@ -300,6 +300,22 @@
 ;    (setq TeX-PDF-mode t)
 ;    (set-default 'preview-scale-function 2.0)))
 
+; (req-package git-gutter
+;   :config
+;   (global-git-gutter-mode t)
+;   :bind
+;   (("C-x C-g" . git-gutter:toggle)
+;    ("C-x v =" . git-gutter:popup-hunk)
+;    ("C-x p" . git-gutter:previous-hunk)
+;    ("C-x n" . git-gutter:next-hunk)
+;    ("C-x v s" . git-gutter:stage-hunk)
+;    ("C-x v r" . git-gutter:revert-hunk)))
+
+(req-package diff-hl
+  :config
+  (global-diff-hl-mode))
+
+;;; End of Packages:
 (req-package-finish)
 
 ;;; UI options:
@@ -321,7 +337,7 @@
 (global-set-key [f5] 'recompile)
 (global-set-key [f6] 'rgrep)
 (global-set-key (kbd "C-c c") 'org-capture)
-(global-set-key (kbd "C-x p") 'objc-headline)
+;(global-set-key (kbd "C-x p") 'objc-headline)
 
 (defun revert-buffer-no-confirm ()
   "Revert buffer without confirmation."
@@ -393,3 +409,4 @@
 (provide 'init)
 ;;; init.el ends here
 
+(put 'dired-find-alternate-file 'disabled nil)
