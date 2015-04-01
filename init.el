@@ -318,6 +318,7 @@
   (setq org-replace-disputed-keys t))
 
 (req-package org-agenda
+  :bind ("C-c a" . org-agenda-list)
   :config
   (progn
     ;; refresh agenda view regularly
