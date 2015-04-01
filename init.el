@@ -4,9 +4,6 @@
 ;; Must use Emacs 24
 
 ;;; Code:
-(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-(load custom-file)
-
 
 ;;; Initial stuff:
 (require 'eieio)
@@ -25,6 +22,7 @@
   :config (global-smart-tab-mode t))
 
 (req-package yasnippet
+  :defer 5
   :config
   (progn
     (yas/initialize)
@@ -97,7 +95,11 @@
   (req-package xcode-document-viewer))
 
 (req-package ensime)
-(req-package gruber-darker-theme)
+
+(req-package gruber-darker-theme
+  :config
+  (load-theme 'gruber-darker t))
+
 (when (memq window-system '(mac ns))
   (req-package exec-path-from-shell
     :config
@@ -113,7 +115,7 @@
   :config
   (progn
     (setq sml/theme 'respectful)
-    (sml/setup)))
+    (add-hook 'after-init-hook 'sml/setup)))
 
 (req-package expand-region
   :bind (("C-=" . er/expand-region)))
@@ -277,10 +279,10 @@
     (push 'company-readline company-backends)))
 ;    (add-hook 'rlc-no-readline-hook (lambda () (company-mode -1)))))
 
-(req-package company-quickhelp
-  :require (company pos-tip)
-  :config
-  (company-quickhelp-mode 1))
+; (req-package company-quickhelp
+;   :require (company pos-tip)
+;   :config
+;   (company-quickhelp-mode 1))
 
 ; req-package auctex
 ;  :config
@@ -311,6 +313,33 @@
   :config
   (global-diff-hl-mode))
 
+(req-package org
+  :config
+  (setq org-replace-disputed-keys t))
+
+(req-package org-agenda
+  :config
+  (progn
+    ;; refresh agenda view regularly
+    (defun refresh-agenda ()
+      "Call org-agenda-redo function even in the non-agenda buffer."
+      (interactive)
+      (let ((cal-org-buffer (get-buffer "cal.org"))
+            (agenda-buffer (get-buffer org-agenda-buffer-name)))
+        (when (and agenda-window cal-org-buffer)
+          (with-current-buffer cal-org-buffer (revert-buffer t t))
+          (with-current-buffer agenda-window (org-agenda-redo)))))
+    (run-at-time t 300 'refresh-agenda)))
+
+(req-package imenu
+  :config
+  (setq imenu-auto-rescan t))
+
+;; keep compiled Emacs lisp code up to date
+(req-package auto-compile
+  :config
+  (auto-compile-on-save-mode 1))
+
 ;;; End of Packages:
 (req-package-finish)
 
@@ -327,7 +356,7 @@
 (setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
 (setq scroll-step 1) ;; keyboard scroll one line at a time
 
-;;; Misc key bindings
+;;; Misc key bindings:
 (global-set-key (kbd "M-/") 'hippie-expand)
 (global-set-key [pause] 'toggle-window-dedicated)
 (global-set-key [f5] 'recompile)
@@ -341,7 +370,7 @@
 
 (global-set-key (kbd "C-c v") 'revert-buffer-no-confirm)
 
-;;; Misc settings
+;;; Misc settings:
 (show-paren-mode t)
 
 (setq dired-listing-switches "-lgG")
@@ -394,14 +423,6 @@
 (winner-mode t)
 (windmove-default-keybindings)
 
-;; Make windmove work in org-mode:
-(require 'org)
-(setq org-replace-disputed-keys t)
-
-;;; Imenu:
-(require 'imenu)
-(setq imenu-auto-rescan t)
-
 ;; Local Variables:
 ;; imenu-generic-expression: (("Section" "^;;;\\s-+\\(.+\\):\\s-*$" 1) ("Package" "^(req-package \\([a-z-]+\\).*$" 1))
 ;; End:
@@ -410,3 +431,5 @@
 ;;; init.el ends here
 
 (put 'dired-find-alternate-file 'disabled nil)
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(load custom-file)
