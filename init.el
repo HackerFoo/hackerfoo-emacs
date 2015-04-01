@@ -326,9 +326,9 @@
       (interactive)
       (let ((cal-org-buffer (get-buffer "cal.org"))
             (agenda-buffer (get-buffer org-agenda-buffer-name)))
-        (when (and agenda-window cal-org-buffer)
+        (when (and agenda-buffer cal-org-buffer)
           (with-current-buffer cal-org-buffer (revert-buffer t t))
-          (with-current-buffer agenda-window (org-agenda-redo)))))
+          (with-current-buffer agenda-buffer (org-agenda-redo)))))
     (run-at-time t 300 'refresh-agenda)))
 
 (req-package imenu
