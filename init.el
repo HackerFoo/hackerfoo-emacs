@@ -317,7 +317,12 @@
   :config
   (setq org-replace-disputed-keys t))
 
+(req-package org-gcal
+  :config
+  (load-file "~/.emacs.d/org-gcal-config.el"))
+
 (req-package org-agenda
+  :require org-gcal
   :bind ("C-c a" . org-agenda-list)
   :config
   (progn
@@ -325,12 +330,12 @@
     (defun refresh-agenda ()
       "Call org-agenda-redo function even in the non-agenda buffer."
       (interactive)
-      (let ((cal-org-buffer (get-buffer "cal.org"))
-            (agenda-buffer (get-buffer org-agenda-buffer-name)))
-        (when (and agenda-buffer cal-org-buffer)
-          (with-current-buffer cal-org-buffer (revert-buffer t t))
+      (let ((agenda-buffer (get-buffer org-agenda-buffer-name)))
+        (when agenda-buffer
+          (org-gcal-fetch)
+          (org-gcal-refresh-token)
           (with-current-buffer agenda-buffer (org-agenda-redo)))))
-    (run-at-time t 300 'refresh-agenda)))
+    (run-at-time t 600 'refresh-agenda)))
 
 (req-package imenu
   :config
