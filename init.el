@@ -317,9 +317,11 @@
   :config
   (setq org-replace-disputed-keys t))
 
-(req-package org-gcal
-  :config
-  (load-file "~/.emacs.d/org-gcal-config.el"))
+(let ((config "~/.emacs.d/org-gcal-config.el"))
+  (if (file-exists-p config)
+      (req-package org-gcal
+        :config
+        (load-file config))))
 
 (req-package org-agenda
   :require org-gcal
@@ -430,7 +432,7 @@
 (windmove-default-keybindings)
 
 ;; Local Variables:
-;; imenu-generic-expression: (("Section" "^;;;\\s-+\\(.+\\):\\s-*$" 1) ("Package" "^(req-package \\([a-z-]+\\).*$" 1))
+;; imenu-generic-expression: (("Section" "^;;;\\s-+\\(.+\\):\\s-*$" 1) ("Package" "^.*(req-package \\([a-z-]+\\).*$" 1))
 ;; End:
 
 (provide 'init)
