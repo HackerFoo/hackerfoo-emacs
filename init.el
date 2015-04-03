@@ -317,11 +317,11 @@
   :config
   (setq org-replace-disputed-keys t))
 
-(let ((config "~/.emacs.d/org-gcal-config.el"))
-  (if (file-exists-p config)
-      (req-package org-gcal
-        :config
-        (load-file config))))
+(defvar init/org-gcal-config "~/.emacs.d/org-gcal-config.el")
+(if (file-exists-p init/org-gcal-config)
+    (req-package org-gcal
+      :config
+      (load-file init/org-gcal-config)))
 
 (req-package org-agenda
   :require org-gcal
