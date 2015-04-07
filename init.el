@@ -5,12 +5,29 @@
 
 ;;; Code:
 
+;;; Macros:
+(defmacro with-dir (dir &rest body)
+  "Ensure directory DIR exists and then execute BODY."
+  `(let ((dir ,dir))
+     (make-directory dir t)
+     ,@body))
+
+(defmacro when-file (file &rest body)
+  "If FILE exists, execute BODY."
+  `(let ((file ,file))
+     (if (file-exists-p file)
+         (progn
+           ,@body))))
+
 ;;; Initial stuff:
 (require 'eieio)
 (package-initialize)
 (add-to-list 'package-archives
              '("melpa" . "http://melpa.milkbox.net/packages/") t)
-(add-to-list 'load-path "~/.emacs.d/lisp")
+
+(with-dir "~/.emacs.d/lisp"
+  (add-to-list 'load-path dir))
+
 (require 'req-package)
 
 (defvar use-rtags t)
@@ -26,7 +43,8 @@
   :config
   (progn
     (yas/initialize)
-    (setq yas/root-directory '("~/.emacs.d/snippets"))
+    (with-dir "~/.emacs.d/snippets"
+      (setq yas/root-directory `(,dir)))
     (mapc 'yas/load-directory yas/root-directory)
     (yas-global-mode 1)))
 
@@ -66,7 +84,7 @@
   :require auto-complete
   :config
   (progn
-    (add-to-list 'ac-dictionary-directories "~/.emacs.d/elpa/auto-complete-1.4.20110207/dict")
+    ;(add-to-list 'ac-dictionary-directories "~/.emacs.d/elpa/auto-complete-1.4.20110207/dict")
     
     (setq-default ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-dictionary ac-source-words-in-same-mode-buffers))
     (add-hook 'emacs-lisp-mode-hook 'ac-emacs-lisp-mode-setup)
@@ -317,11 +335,11 @@
   :config
   (setq org-replace-disputed-keys t))
 
-(defvar init/org-gcal-config "~/.emacs.d/org-gcal-config.el")
-(if (file-exists-p init/org-gcal-config)
-    (req-package org-gcal
-      :config
-      (load-file init/org-gcal-config)))
+(when-file "~/.emacs.d/org-gcal-config.el"
+  (defvar init/org-gcal-config file)
+  (req-package org-gcal
+    :config
+    (load-file init/org-gcal-config)))
 
 (req-package org-agenda
   :require org-gcal
@@ -347,6 +365,17 @@
 (req-package auto-compile
   :config
   (auto-compile-on-save-mode 1))
+
+(req-package org-projectile
+  :require helm
+  :bind (("C-c n p" . org-projectile:template-or-project)
+         ("C-c c" . org-capture))
+  :config
+  (progn
+    (setq org-projectile:projects-file
+          "~/.emacs.d/projects.org")
+    (setq org-agenda-files (append org-agenda-files (org-projectile:todo-files)))
+    (add-to-list 'org-capture-templates (org-projectile:project-todo-entry "p"))))
 
 ;;; End of Packages:
 (req-package-finish)
@@ -440,4 +469,6 @@
 
 (put 'dired-find-alternate-file 'disabled nil)
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-(load custom-file)
+
+(when-file custom-file
+  (load file))
