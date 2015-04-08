@@ -392,6 +392,14 @@
     (add-hook 'emacs-lisp-mode-hook
        (lambda () (setq-local helm-dash-docsets '("Emacs Lisp"))))))
 
+(req-package persp-mode
+  :init
+  (setq persp-keymap-prefix (kbd "C-c r"))
+  :config
+  (progn
+    (setq wg-morph-on nil) ;; switch off animation
+    (add-hook 'after-init-hook #'(lambda () (persp-mode 1)))))
+
 ;;; End of Packages:
 (req-package-finish)
 
