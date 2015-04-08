@@ -377,6 +377,21 @@
     (setq org-agenda-files (append org-agenda-files (org-projectile:todo-files)))
     (add-to-list 'org-capture-templates (org-projectile:project-todo-entry "p"))))
 
+(req-package helm-spotify
+  :bind (("C-c s" . helm-spotify)))
+
+(req-package helm-dash
+  :bind (("C-c d" . helm-dash))
+  :init
+  (progn
+    (setq helm-dash-browser-func 'eww)
+    (add-hook 'c-mode-hook
+       (lambda () (setq-local helm-dash-docsets '("C"))))
+    (add-hook 'c++-mode-hook
+       (lambda () (setq-local helm-dash-docsets '("C++"))))
+    (add-hook 'emacs-lisp-mode-hook
+       (lambda () (setq-local helm-dash-docsets '("Emacs Lisp"))))))
+
 ;;; End of Packages:
 (req-package-finish)
 
