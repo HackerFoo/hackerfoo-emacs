@@ -381,14 +381,14 @@
   :bind (("C-c s" . helm-spotify)))
 
 (req-package helm-dash
-  :bind (("C-c d" . helm-dash))
+  :bind (("C-c d" . helm-dash-at-point))
   :init
   (progn
     (setq helm-dash-browser-func 'eww)
     (add-hook 'c-mode-hook
        (lambda () (setq-local helm-dash-docsets '("C"))))
     (add-hook 'c++-mode-hook
-       (lambda () (setq-local helm-dash-docsets '("C++"))))
+       (lambda () (setq-local helm-dash-docsets '("C" "C++"))))
     (add-hook 'emacs-lisp-mode-hook
        (lambda () (setq-local helm-dash-docsets '("Emacs Lisp"))))))
 
@@ -474,6 +474,8 @@
 
 (winner-mode t)
 (windmove-default-keybindings)
+
+(add-hook 'c-mode-common-hook 'hs-minor-mode)
 
 ;; Local Variables:
 ;; imenu-generic-expression: (("Section" "^;;;\\s-+\\(.+\\):\\s-*$" 1) ("Package" "^.*(req-package \\([a-z-]+\\).*$" 1))
