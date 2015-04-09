@@ -20,7 +20,12 @@
            ,@body))))
 
 ;;; Initial stuff:
+
+;; put this here to make sure it loads before org
+(defvar org-replace-disputed-keys t)
+
 (require 'eieio)
+
 (package-initialize)
 (add-to-list 'package-archives
              '("melpa" . "http://melpa.milkbox.net/packages/") t)
@@ -331,10 +336,6 @@
   :config
   (global-diff-hl-mode))
 
-(req-package org
-  :config
-  (setq org-replace-disputed-keys t))
-
 (when-file "~/.emacs.d/org-gcal-config.el"
   (defvar init/org-gcal-config file)
   (req-package org-gcal
@@ -392,13 +393,11 @@
     (add-hook 'emacs-lisp-mode-hook
        (lambda () (setq-local helm-dash-docsets '("Emacs Lisp"))))))
 
-(req-package persp-mode
-  :init
-  (setq persp-keymap-prefix (kbd "C-c r"))
+(req-package perspective
   :config
-  (progn
-    (setq wg-morph-on nil) ;; switch off animation
-    (add-hook 'after-init-hook #'(lambda () (persp-mode 1)))))
+  (add-hook 'after-init-hook #'(lambda () (persp-mode 1))))
+
+(req-package persp-projectile)
 
 ;;; End of Packages:
 (req-package-finish)
