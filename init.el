@@ -395,7 +395,10 @@
 
 (req-package perspective
   :config
-  (add-hook 'after-init-hook #'(lambda () (persp-mode 1))))
+  (progn
+    (custom-set-faces
+     '(persp-selected-face ((t (:foreground "deep sky blue" :weight bold)))))
+    (add-hook 'after-init-hook #'(lambda () (persp-mode 1)))))
 
 (req-package persp-projectile)
 
