@@ -405,6 +405,10 @@
 
 (req-package persp-projectile)
 
+(req-package tramp
+  :config
+  (setq tramp-default-method "ssh"))
+
 ;;; End of Packages:
 (req-package-finish)
 
