@@ -128,7 +128,7 @@
     :config
     (exec-path-from-shell-initialize)))
 
-(req-package purpose
+(req-package window-purpose
   :config (purpose-mode t))
 
 (req-package golden-ratio
