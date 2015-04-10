@@ -66,7 +66,10 @@
     (define-key helm-map (kbd "C-c g") 'helm-git-grep-from-helm)))
 
 (req-package helm
-  :config (helm-mode t))
+  :config
+  (progn
+    (setq helm-mode-reverse-history nil)
+    (helm-mode t)))
 
 (req-package magit
   :bind ("C-x g" . magit-status))
