@@ -412,9 +412,9 @@
 (req-package flyspell
   :init
   (progn
-    (dolist (hook '(text-mode-hook))
+    (dolist (hook '(text-mode-hook message-mode-hook))
       (add-hook hook (lambda () (flyspell-mode 1))))
-    (dolist (hook '(c-mode-hook c-mode-common-hook))
+    (dolist (hook '(c-mode-common-hook emacs-lisp-mode-hook latex-mode-hook python-mode-hook html-mode-hook))
       (add-hook hook (lambda () (flyspell-prog-mode))))
     (dolist (hook '(change-log-mode-hook log-edit-mode-hook))
       (add-hook hook (lambda () (flyspell-mode -1))))))
