@@ -409,6 +409,16 @@
   :config
   (setq tramp-default-method "ssh"))
 
+(req-package flyspell
+  :init
+  (progn
+    (dolist (hook '(text-mode-hook))
+      (add-hook hook (lambda () (flyspell-mode 1))))
+    (dolist (hook '(c-mode-hook c-mode-common-hook))
+      (add-hook hook (lambda () (flyspell-prog-mode))))
+    (dolist (hook '(change-log-mode-hook log-edit-mode-hook))
+      (add-hook hook (lambda () (flyspell-mode -1))))))
+
 ;;; End of Packages:
 (req-package-finish)
 
@@ -494,15 +504,17 @@
 
 (add-hook 'c-mode-common-hook 'hs-minor-mode)
 
+(put 'dired-find-alternate-file 'disabled nil)
+
+;;; Custom File:
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+
+(when-file custom-file
+  (load file))
+
 ;; Local Variables:
 ;; imenu-generic-expression: (("Section" "^;;;\\s-+\\(.+\\):\\s-*$" 1) ("Package" "^.*(req-package \\([a-z-]+\\).*$" 1))
 ;; End:
 
 (provide 'init)
 ;;; init.el ends here
-
-(put 'dired-find-alternate-file 'disabled nil)
-(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-
-(when-file custom-file
-  (load file))
