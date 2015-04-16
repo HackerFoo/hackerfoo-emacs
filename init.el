@@ -419,21 +419,30 @@
     (dolist (hook '(change-log-mode-hook log-edit-mode-hook))
       (add-hook hook (lambda () (flyspell-mode -1))))))
 
+(req-package whitespace
+  :config
+  (progn
+    (setq whitespace-global-modes t)
+    (setq whitespace-style '(face trailing indentation empty space-before-tab space-after-tab))
+    (global-whitespace-mode 1)))
+
 ;;; End of Packages:
 (req-package-finish)
 
 ;;; UI options:
 (setq inhibit-splash-screen t)
 (setq inhibit-startup-message t)
-(setq mouse-wheel-follow-mouse 't)
+(setq mouse-wheel-follow-mouse t)
 (setq scroll-step 1)
 (menu-bar-mode 0)
 (tool-bar-mode 0)
 (scroll-bar-mode 0)
 
-;; scroll one line at a time (less "jumpy" than defaults)
-(setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
-(setq scroll-step 1) ;; keyboard scroll one line at a time
+(setq mouse-wheel-progressive-speed nil)
+;; make scrolling smoother
+(setq scroll-margin 0
+      scroll-conservatively 100000
+      scroll-preserve-screen-position 1)
 
 ;;; Misc key bindings:
 (global-set-key (kbd "M-/") 'hippie-expand)
@@ -505,6 +514,8 @@
 (add-hook 'c-mode-common-hook 'hs-minor-mode)
 
 (put 'dired-find-alternate-file 'disabled nil)
+
+(delete-selection-mode 1)
 
 ;;; Custom File:
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
