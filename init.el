@@ -324,17 +324,6 @@
 ;    (setq TeX-PDF-mode t)
 ;    (set-default 'preview-scale-function 2.0)))
 
-; (req-package git-gutter
-;   :config
-;   (global-git-gutter-mode t)
-;   :bind
-;   (("C-x C-g" . git-gutter:toggle)
-;    ("C-x v =" . git-gutter:popup-hunk)
-;    ("C-x p" . git-gutter:previous-hunk)
-;    ("C-x n" . git-gutter:next-hunk)
-;    ("C-x v s" . git-gutter:stage-hunk)
-;    ("C-x v r" . git-gutter:revert-hunk)))
-
 (req-package diff-hl
   :config
   (global-diff-hl-mode))
@@ -425,6 +414,10 @@
     (setq whitespace-global-modes t)
     (setq whitespace-style '(face trailing indentation empty space-before-tab space-after-tab))
     (global-whitespace-mode 1)))
+
+(req-package framemove
+  :config
+  (setq framemove-hook-into-windmove t))
 
 ;;; End of Packages:
 (req-package-finish)
