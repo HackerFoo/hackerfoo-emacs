@@ -26,6 +26,7 @@
 
 (require 'eieio)
 
+(setq package-enable-at-startup nil)
 (package-initialize)
 (add-to-list 'package-archives
              '("melpa" . "http://melpa.milkbox.net/packages/") t)
@@ -195,14 +196,22 @@
     (define-key global-map (kbd "C-<") (function rtags-find-virtuals-at-point))
     (define-key global-map (kbd "M-i") (function tags-imenu)))))
 
+(if (not use-rtags)
+  (req-package ggtags
+    :config
+    (add-hook 'c-mode-common-hook
+              (lambda ()
+                (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
+                  (ggtags-mode 1))))))
+
 (if use-ycmd
   (progn
     (req-package ycmd
       :config
       (progn
-        (set-variable 'ycmd-server-command '("python" "/opt/ycmd/ycmd"))
-        (set-variable 'ycmd-idle-change-delay 0.5)
-        (set-variable 'ycmd-parse-conditions '(save new-line idle-change mode-enabled))
+        (setq ycmd-server-command '("python" "/opt/ycmd/ycmd"))
+        (setq ycmd-idle-change-delay 0.5)
+        (setq ycmd-parse-conditions '(save new-line idle-change mode-enabled))
         (add-hook 'c-mode-hook 'ycmd-mode)
         (add-hook 'c++-mode-hook 'ycmd-mode)))
 
@@ -256,7 +265,8 @@
 (req-package flycheck
   :config
   (progn
-    (add-hook 'after-init-hook #'global-flycheck-mode)
+    (if (or use-ycmd use-irony)
+      (add-hook 'after-init-hook #'global-flycheck-mode))
     (defun flycheck-gcc-include-local-dir ()
       "Add the current dir to the gcc checker include list"
       (if (derived-mode-p 'c-mode 'c++-mode)
@@ -276,18 +286,12 @@
   :config
   (add-hook 'flycheck-mode-hook 'flycheck-color-mode-line-mode))
 
-(if (not use-rtags)
-  (req-package ggtags
-    :config
-    (add-hook 'c-mode-common-hook
-              (lambda ()
-                (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
-                  (ggtags-mode 1))))))
-
 (req-package company
   :config
-  (add-hook 'after-init-hook 'global-company-mode)
+  (if (or use-ycmd use-irony)
+    (add-hook 'after-init-hook 'global-company-mode))
   (setq company-idle-delay 0)
+  (setq company-dabbrev-downcase nil)
   (custom-set-faces
    '(company-preview ((t (:underline t))))
    '(company-preview-common ((t (:inherit company-preview :foreground "deep sky blue"))))
@@ -468,7 +472,7 @@
   '(lambda ()
      (setq split-width-threshold nil)
      (setq compilation-window-height 12)
-     (setq compilation-scroll-output 'first-error)
+     (setq compilation-scroll-output t)
      (add-to-list 'compilation-error-regexp-alist 'iarbuild)
      (add-to-list 'compilation-error-regexp-alist-alist
        '(iarbuild "^\\(.*\\)(\\([0-9]+\\))" 1 2))))
@@ -510,6 +514,9 @@
 (put 'dired-find-alternate-file 'disabled nil)
 
 (delete-selection-mode 1)
+
+;;; Enable Commands:
+(put 'upcase-region 'disabled nil)
 
 ;;; Custom File:
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
