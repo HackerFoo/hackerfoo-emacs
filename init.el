@@ -45,7 +45,7 @@
   :config (global-smart-tab-mode t))
 
 (req-package yasnippet
-  :defer 5
+  :defer 15
   :config
   (progn
     (yas/initialize)
@@ -332,6 +332,14 @@
 (req-package diff-hl
   :config
   (global-diff-hl-mode))
+
+(req-package org
+  :config
+  (setq org-startup-indented t
+        org-startup-folded nil
+        org-agenda-inhibit-startup nil
+        org-export-with-toc nil
+        org-todo-keywords '((sequence "TODO" "STARTED" "DONE" "CANCELED"))))
 
 (when-file "~/.emacs.d/org-gcal-config.el"
   (defvar init/org-gcal-config file)
