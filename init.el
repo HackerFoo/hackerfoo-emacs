@@ -341,7 +341,11 @@
         org-startup-folded nil
         org-agenda-inhibit-startup nil
         org-export-with-toc nil
-        org-todo-keywords '((sequence "TODO" "STARTED" "DONE" "CANCELED"))))
+        org-todo-keywords '((sequence "TODO" "STARTED" "DONE" "CANCELED"))
+        org-todo-keyword-faces '(("TODO"     . "red")
+                                 ("STARTED"  . "yellow")
+                                 ("DONE"     . "green")
+                                 ("CANCELED" . "gray"))))
 
 (when-file "~/.emacs.d/org-gcal-config.el"
   (defvar init/org-gcal-config file)
