@@ -73,7 +73,9 @@
     (helm-mode t)))
 
 (req-package magit
-  :bind ("C-x g" . magit-status))
+  :bind ("C-x g" . magit-status)
+  :config
+    (setq magit-last-seen-setup-instructions "1.4.0"))
 
 (req-package evernote-mode
   :bind (("C-c e c" . evernote-create-note)
@@ -265,8 +267,8 @@
 (req-package flycheck
   :config
   (progn
-    (if (or use-ycmd use-irony)
-      (add-hook 'after-init-hook #'global-flycheck-mode))
+    (dolist (hook '(c-mode-common-hook emacs-lisp-mode-hook latex-mode-hook python-mode-hook html-mode-hook))
+      (add-hook hook (lambda () (flycheck-mode 1))))
     (defun flycheck-gcc-include-local-dir ()
       "Add the current dir to the gcc checker include list"
       (if (derived-mode-p 'c-mode 'c++-mode)
