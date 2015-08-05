@@ -415,7 +415,11 @@
 
 (req-package tramp
   :config
-  (setq tramp-default-method "ssh"))
+  (progn
+    (setq tramp-default-method "ssh")
+    (setq remote-file-name-inhibit-cache nil)
+    (setq tramp-completion-reread-directory-timeout nil)
+    (setq tramp-verbose 0)))
 
 (req-package flyspell
   :init
