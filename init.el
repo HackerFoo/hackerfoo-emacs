@@ -442,6 +442,10 @@
   :config
   (setq framemove-hook-into-windmove t))
 
+(req-package shell-switcher
+  :config
+  (setq shell-switcher-mode t))
+
 ;;; End of Packages:
 (req-package-finish)
 
