@@ -446,6 +446,10 @@
   :config
   (setq shell-switcher-mode t))
 
+(req-package eww
+  :config
+  (setq browse-url-browser-function 'eww-browse-url))
+
 ;;; End of Packages:
 (req-package-finish)
 
