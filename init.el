@@ -31,8 +31,8 @@
 (add-to-list 'package-archives
              '("melpa" . "http://melpa.milkbox.net/packages/") t)
 
-(with-dir "~/.emacs.d/lisp"
-  (add-to-list 'load-path dir))
+(let ((default-directory "~/.emacs.d/lisp/"))
+  (normal-top-level-add-subdirs-to-load-path))
 
 (require 'req-package)
 
