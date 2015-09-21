@@ -115,6 +115,7 @@
   :config
   (progn
     (setq projectile-completion-system 'helm)
+    (setq projectile-enable-caching t)
     (helm-projectile-on)))
 
 (req-package sr-speedbar
