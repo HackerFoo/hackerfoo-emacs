@@ -31,8 +31,8 @@
 (add-to-list 'package-archives
              '("melpa" . "http://melpa.milkbox.net/packages/") t)
 
-(with-dir "~/.emacs.d/lisp"
-  (add-to-list 'load-path dir))
+(let ((default-directory "~/.emacs.d/lisp/"))
+  (normal-top-level-add-subdirs-to-load-path))
 
 (require 'req-package)
 
@@ -293,6 +293,8 @@
   :config
   (if (or use-ycmd use-irony)
     (add-hook 'after-init-hook 'global-company-mode))
+  ;; disable company mode in GUD
+  (add-hook 'gud-mode-hook (lambda () (company-mode nil)))
   (setq company-idle-delay 0)
   (setq company-dabbrev-downcase nil)
   (custom-set-faces
@@ -342,7 +344,7 @@
         org-startup-folded nil
         org-agenda-inhibit-startup nil
         org-export-with-toc nil
-        org-todo-keywords '((sequence "TODO" "STARTED" "DONE" "CANCELED"))
+        org-todo-keywords '((sequence "TODO" "STARTED" "|" "DONE" "CANCELED"))
         org-todo-keyword-faces '(("TODO"     . "red")
                                  ("STARTED"  . "yellow")
                                  ("DONE"     . "green")
@@ -435,7 +437,7 @@
 (req-package whitespace
   :config
   (progn
-    (setq whitespace-global-modes t)
+    (setq whitespace-global-modes '(not comint-mode gud-mode gdb-inferior-io-mode))
     (setq whitespace-style '(face trailing indentation empty space-before-tab space-after-tab))
     (global-whitespace-mode 1)))
 
@@ -446,6 +448,10 @@
 (req-package shell-switcher
   :config
   (setq shell-switcher-mode t))
+
+(req-package eww
+  :config
+  (setq browse-url-browser-function 'eww-browse-url))
 
 ;;; End of Packages:
 (req-package-finish)
@@ -519,8 +525,8 @@
 
 (autoload 'imaxima "imaxima" "Image support for Maxima." t)
 
-(if (executable-find "w3m")
-  (setq browse-url-browser-function 'w3m))
+;(if (executable-find "w3m")
+;  (setq browse-url-browser-function 'w3m))
 
 (setq-default
   indent-tabs-mode nil
@@ -537,6 +543,20 @@
 (put 'dired-find-alternate-file 'disabled nil)
 
 (delete-selection-mode 1)
+
+;; Enable mouse support
+(unless window-system
+  (require 'mouse)
+  (xterm-mouse-mode t)
+  (global-set-key [mouse-4] (lambda ()
+                              (interactive)
+                              (scroll-down 1)))
+  (global-set-key [mouse-5] (lambda ()
+                              (interactive)
+                              (scroll-up 1)))
+  (defun track-mouse (e))
+  (setq mouse-sel-mode t)
+  )
 
 ;;; Enable Commands:
 (put 'upcase-region 'disabled nil)
