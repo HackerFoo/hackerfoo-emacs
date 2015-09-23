@@ -292,6 +292,8 @@
   :config
   (if (or use-ycmd use-irony)
     (add-hook 'after-init-hook 'global-company-mode))
+  ;; disable company mode in GUD
+  (add-hook 'gud-mode-hook (lambda () (company-mode nil)))
   (setq company-idle-delay 0)
   (setq company-dabbrev-downcase nil)
   (custom-set-faces
@@ -434,7 +436,7 @@
 (req-package whitespace
   :config
   (progn
-    (setq whitespace-global-modes t)
+    (setq whitespace-global-modes '(not comint-mode gud-mode gdb-inferior-io-mode))
     (setq whitespace-style '(face trailing indentation empty space-before-tab space-after-tab))
     (global-whitespace-mode 1)))
 
