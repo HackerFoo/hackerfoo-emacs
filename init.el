@@ -341,7 +341,7 @@
         org-startup-folded nil
         org-agenda-inhibit-startup nil
         org-export-with-toc nil
-        org-todo-keywords '((sequence "TODO" "STARTED" "DONE" "CANCELED"))
+        org-todo-keywords '((sequence "TODO" "STARTED" "|" "DONE" "CANCELED"))
         org-todo-keyword-faces '(("TODO"     . "red")
                                  ("STARTED"  . "yellow")
                                  ("DONE"     . "green")
@@ -522,8 +522,8 @@
 
 (autoload 'imaxima "imaxima" "Image support for Maxima." t)
 
-(if (executable-find "w3m")
-  (setq browse-url-browser-function 'w3m))
+;(if (executable-find "w3m")
+;  (setq browse-url-browser-function 'w3m))
 
 (setq-default
   indent-tabs-mode nil
@@ -540,6 +540,20 @@
 (put 'dired-find-alternate-file 'disabled nil)
 
 (delete-selection-mode 1)
+
+;; Enable mouse support
+(unless window-system
+  (require 'mouse)
+  (xterm-mouse-mode t)
+  (global-set-key [mouse-4] (lambda ()
+                              (interactive)
+                              (scroll-down 1)))
+  (global-set-key [mouse-5] (lambda ()
+                              (interactive)
+                              (scroll-up 1)))
+  (defun track-mouse (e))
+  (setq mouse-sel-mode t)
+  )
 
 ;;; Enable Commands:
 (put 'upcase-region 'disabled nil)
