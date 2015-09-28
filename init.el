@@ -392,8 +392,9 @@
     (setq org-agenda-files (append org-agenda-files (org-projectile:todo-files)))
     (add-to-list 'org-capture-templates (org-projectile:project-todo-entry "p"))))
 
-(req-package helm-spotify
-  :bind (("C-c s" . helm-spotify)))
+; broken 20150928: cl-no-primary-method: No primary method for %S: gui-backend-set-selection, PRIMARY, #("." 0 1 (fontified t face font-lock-comment-face))Error during redisplay:
+;(req-package helm-spotify
+;   :bind (("C-c s" . helm-spotify)))
 
 (req-package helm-dash
   :bind (("C-c d" . helm-dash-at-point))
