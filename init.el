@@ -348,7 +348,9 @@
         org-todo-keyword-faces '(("TODO"     . "red")
                                  ("STARTED"  . "yellow")
                                  ("DONE"     . "green")
-                                 ("CANCELED" . "gray"))))
+                                 ("CANCELED" . "gray"))
+        org-latex-pdf-process
+          '("xelatex -shell-escape -interaction nonstopmode -output-directory %o %f")))
 
 (when-file "~/.emacs.d/org-gcal-config.el"
   (defvar init/org-gcal-config file)
