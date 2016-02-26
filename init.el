@@ -35,6 +35,7 @@
   (normal-top-level-add-subdirs-to-load-path))
 
 (require 'req-package)
+; (setq use-package-debug t)
 
 (defvar use-rtags t)
 (defvar use-irony t)
@@ -47,35 +48,35 @@
 (req-package yasnippet
   :defer 15
   :config
-  (progn
-    (yas/initialize)
-    (with-dir "~/.emacs.d/snippets"
-      (setq yas/root-directory `(,dir)))
-    (mapc 'yas/load-directory yas/root-directory)
-    (yas-global-mode 1)))
+  (yas/initialize)
+  (with-dir "~/.emacs.d/snippets"
+    (setq yas/root-directory `(,dir)))
+  (mapc 'yas/load-directory yas/root-directory)
+  (yas-global-mode 1))
 
 (req-package helm-config
-  :require helm
-  :bind (("C-c h" . helm-mini)
-         ("C-c g" . helm-get-grep)
-         ("M-i" . helm-imenu))
+  :require (helm)
+  :bind (("C-c g" . helm-get-grep)
+         ("M-i" . helm-imenu)
+         ("M-x" . helm-M-x)
+         ("C-x C-f" . helm-find-files)
+         ("C-x b" . helm-mini))
   :config
-  (progn
-    ;; Invoke `helm-git-grep' from isearch.
-    (define-key isearch-mode-map (kbd "C-c g") 'helm-git-grep-from-isearch)
-    ;; Invoke `helm-git-grep' from other helm.
-    (define-key helm-map (kbd "C-c g") 'helm-git-grep-from-helm)))
+  ;; Invoke `helm-git-grep' from isearch.
+  (define-key isearch-mode-map (kbd "C-c g") 'helm-git-grep-from-isearch)
+  ;; Invoke `helm-git-grep' from other helm.
+  (define-key helm-map (kbd "C-c g") 'helm-git-grep-from-helm)
+  (setq helm-mode-reverse-history nil)
+  (helm-mode 1))
 
 (req-package helm
   :config
-  (progn
-    (setq helm-mode-reverse-history nil)
-    (helm-mode t)))
+  (setq helm-mode-reverse-history nil))
 
 (req-package magit
   :bind ("C-x g" . magit-status)
   :config
-    (setq magit-last-seen-setup-instructions "1.4.0"))
+  (setq magit-last-seen-setup-instructions "1.4.0"))
 
 (req-package evernote-mode
   :bind (("C-c e c" . evernote-create-note)
@@ -86,37 +87,33 @@
          ("C-c e p" . evernote-post-region)
          ("C-c e b" . evernote-browser))
   :config
-  (progn
-    (setq evernote-username "hackerfoo") ; optional: you can use this username as default.
-    (setq evernote-enml-formatter-command '("w3m" "-dump" "-I" "UTF8" "-O" "UTF8")) ; option
-  ))
+  (setq evernote-username "hackerfoo") ; optional: you can use this username as default.
+  (setq evernote-enml-formatter-command '("w3m" "-dump" "-I" "UTF8" "-O" "UTF8"))) ; option)
 
 (req-package auto-complete-config
-  :require auto-complete
+  :require (auto-complete)
   :config
-  (progn
-    ;(add-to-list 'ac-dictionary-directories "~/.emacs.d/elpa/auto-complete-1.4.20110207/dict")
-    
-    (setq-default ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-dictionary ac-source-words-in-same-mode-buffers))
-    (add-hook 'emacs-lisp-mode-hook 'ac-emacs-lisp-mode-setup)
-    (add-hook 'c-mode-common-hook 'ac-cc-mode-setup)
-    (add-hook 'ruby-mode-hook 'ac-ruby-mode-setup)
-    (add-hook 'css-mode-hook 'ac-css-mode-setup)
-    (add-hook 'auto-complete-mode-hook 'ac-common-setup)
-    ;(global-auto-complete-mode t)
-    (add-to-list 'ac-modes 'objc-mode)))
+  ;(add-to-list 'ac-dictionary-directories "~/.emacs.d/elpa/auto-complete-1.4.20110207/dict")
+  (setq-default ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-dictionary ac-source-words-in-same-mode-buffers))
+  (add-hook 'emacs-lisp-mode-hook 'ac-emacs-lisp-mode-setup)
+  (add-hook 'c-mode-common-hook 'ac-cc-mode-setup)
+  (add-hook 'ruby-mode-hook 'ac-ruby-mode-setup)
+  (add-hook 'css-mode-hook 'ac-css-mode-setup)
+  (add-hook 'auto-complete-mode-hook 'ac-common-setup)
+  ;(global-auto-complete-mode t)
+  (add-to-list 'ac-modes 'objc-mode))
 
 (req-package auto-complete)
 
 (req-package projectile
-  :config (projectile-global-mode))
+  :config (projectile-global-mode 1))
+
 (req-package helm-projectile
   :require (helm projectile)
   :config
-  (progn
-    (setq projectile-completion-system 'helm)
-    (setq projectile-enable-caching t)
-    (helm-projectile-on)))
+  (setq projectile-completion-system 'helm)
+  (setq projectile-enable-caching t)
+  (helm-projectile-on))
 
 (req-package sr-speedbar
   :bind (("<f12>" . sr-speedbar-toggle)))
@@ -135,17 +132,20 @@
     :config
     (exec-path-from-shell-initialize)))
 
-(req-package window-purpose
-  :config (purpose-mode t))
+; breaks helm keybindings 20160127
+; (req-package window-purpose
+;   :require (helm)
+;   :config
+;   (setq purpose-preferred-prompt 'helm)
+;   (purpose-mode t))
 
 (req-package golden-ratio
   :config (golden-ratio-mode t))
 
 (req-package smart-mode-line
   :config
-  (progn
-    (setq sml/theme 'respectful)
-    (add-hook 'after-init-hook 'sml/setup)))
+  (setq sml/theme 'respectful)
+  (add-hook 'after-init-hook 'sml/setup))
 
 (req-package expand-region
   :bind (("C-=" . er/expand-region)))
@@ -153,7 +153,6 @@
 (if use-rtags
   (req-package rtags
     :config
-    (progn
     (defun use-rtags (&optional useFileManager)
       (and (rtags-executable-find "rc")
            (cond ((and (not (eq major-mode 'c++-mode))
@@ -197,7 +196,7 @@
     (define-key global-map (kbd "C-.") (function tags-find-symbol))
     (define-key global-map (kbd "C-,") (function tags-find-references))
     (define-key global-map (kbd "C-<") (function rtags-find-virtuals-at-point))
-    (define-key global-map (kbd "M-i") (function tags-imenu)))))
+    (define-key global-map (kbd "M-i") (function tags-imenu))))
 
 (if (not use-rtags)
   (req-package ggtags
@@ -211,12 +210,11 @@
   (progn
     (req-package ycmd
       :config
-      (progn
-        (setq ycmd-server-command '("python" "/opt/ycmd/ycmd"))
-        (setq ycmd-idle-change-delay 0.5)
-        (setq ycmd-parse-conditions '(save new-line idle-change mode-enabled))
-        (add-hook 'c-mode-hook 'ycmd-mode)
-        (add-hook 'c++-mode-hook 'ycmd-mode)))
+      (setq ycmd-server-command '("python" "/opt/ycmd/ycmd"))
+      (setq ycmd-idle-change-delay 0.5)
+      (setq ycmd-parse-conditions '(save new-line idle-change mode-enabled))
+      (add-hook 'c-mode-hook 'ycmd-mode)
+      (add-hook 'c++-mode-hook 'ycmd-mode))
 
     (req-package flycheck-ycmd
       :require (flycheck ycmd)
@@ -232,32 +230,30 @@
   (progn
     (req-package irony
       :config
-      (progn
-        (add-hook 'c++-mode-hook 'irony-mode)
-        (add-hook 'c-mode-hook 'irony-mode)
-        (add-hook 'objc-mode-hook 'irony-mode)
+      (add-hook 'c++-mode-hook 'irony-mode)
+      (add-hook 'c-mode-hook 'irony-mode)
+      (add-hook 'objc-mode-hook 'irony-mode)
 
-        ;; replace the `completion-at-point' and `complete-symbol' bindings in
-        ;; irony-mode's buffers by irony-mode's function
-        (defun my-irony-mode-hook ()
-          (define-key irony-mode-map [remap completion-at-point]
-            'irony-completion-at-point-async)
-          (define-key irony-mode-map [remap complete-symbol]
-            'irony-completion-at-point-async))
-        (add-hook 'irony-mode-hook 'my-irony-mode-hook)
-        (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)))
+      ;; replace the `completion-at-point' and `complete-symbol' bindings in
+      ;; irony-mode's buffers by irony-mode's function
+      (defun my-irony-mode-hook ()
+        (define-key irony-mode-map [remap completion-at-point]
+          'irony-completion-at-point-async)
+        (define-key irony-mode-map [remap complete-symbol]
+          'irony-completion-at-point-async))
+      (add-hook 'irony-mode-hook 'my-irony-mode-hook)
+      (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
 
     (req-package company-irony
       :require (company irony)
       :config
-      (progn
-        (add-to-list 'company-backends 'company-irony)
-        (add-hook 'irony-mode-hook 'company-irony-setup-begin-commands)))
+      (add-to-list 'company-backends 'company-irony)
+      (add-hook 'irony-mode-hook 'company-irony-setup-begin-commands))
 
     (req-package flycheck-irony
       :require (flycheck irony)
       :config
-       (add-hook 'flycheck-mode-hook #'flycheck-irony-setup))
+      (add-hook 'flycheck-mode-hook #'flycheck-irony-setup))
 
     (req-package irony-eldoc
       :require (irony eldoc)
@@ -267,15 +263,13 @@
 
 (req-package flycheck
   :config
-  (progn
-    (dolist (hook '(c-mode-common-hook emacs-lisp-mode-hook latex-mode-hook python-mode-hook html-mode-hook))
-      (add-hook hook (lambda () (flycheck-mode 1))))
-    (defun flycheck-gcc-include-local-dir ()
-      "Add the current dir to the gcc checker include list"
-      (if (derived-mode-p 'c-mode 'c++-mode)
-        (add-to-list 'flycheck-gcc-include-path (file-name-directory (buffer-file-name)))))
-    (add-hook 'flycheck-before-syntax-check-hook 'flycheck-gcc-include-local-dir)
-))
+  (dolist (hook '(c-mode-common-hook emacs-lisp-mode-hook latex-mode-hook python-mode-hook html-mode-hook))
+    (add-hook hook (lambda () (flycheck-mode 1))))
+  (defun flycheck-gcc-include-local-dir ()
+    "Add the current dir to the gcc checker include list"
+    (if (derived-mode-p 'c-mode 'c++-mode)
+      (add-to-list 'flycheck-gcc-include-path (file-name-directory (buffer-file-name)))))
+  (add-hook 'flycheck-before-syntax-check-hook 'flycheck-gcc-include-local-dir))
 
 (req-package popup)
 
@@ -285,14 +279,14 @@
   (setq flycheck-display-errors-function #'flycheck-pos-tip-error-messages))
 
 (req-package flycheck-color-mode-line
-  :require flycheck
+  :require (flycheck)
   :config
   (add-hook 'flycheck-mode-hook 'flycheck-color-mode-line-mode))
 
 (req-package company
   :config
-  (if (or use-ycmd use-irony)
-    (add-hook 'after-init-hook 'global-company-mode))
+  ;(if (or use-ycmd use-irony)
+  ;  (add-hook 'after-init-hook 'global-company-mode))
   ;; disable company mode in GUD
   (add-hook 'gud-mode-hook (lambda () (company-mode nil)))
   (setq company-idle-delay 0)
@@ -309,11 +303,10 @@
    '(company-tooltip-selection ((t (:inherit company-tooltip :background "steel blue"))))))
 
 (req-package readline-complete
-  :require company
+  :require (company)
   :config
-  (progn
-    (push 'company-readline company-backends)))
-;    (add-hook 'rlc-no-readline-hook (lambda () (company-mode -1)))))
+  (push 'company-readline company-backends))
+; (add-hook 'rlc-no-readline-hook (lambda () (company-mode -1)))))
 
 ; (req-package company-quickhelp
 ;   :require (company pos-tip)
@@ -359,20 +352,19 @@
     (load-file init/org-gcal-config)))
 
 (req-package org-agenda
-  :require org-gcal
+  :require (org-gcal)
   :bind ("C-c a" . org-agenda-list)
   :config
-  (progn
-    ;; refresh agenda view regularly
-    (defun refresh-agenda ()
-      "Call org-agenda-redo function even in the non-agenda buffer."
-      (interactive)
-      (let ((agenda-buffer (get-buffer org-agenda-buffer-name)))
-        (when agenda-buffer
-          (org-gcal-fetch)
-          (org-gcal-refresh-token)
-          (with-current-buffer agenda-buffer (org-agenda-redo)))))
-    (run-at-time t 600 'refresh-agenda)))
+  ;; refresh agenda view regularly
+  (defun refresh-agenda ()
+    "Call org-agenda-redo function even in the non-agenda buffer."
+    (interactive)
+    (let ((agenda-buffer (get-buffer org-agenda-buffer-name)))
+      (when agenda-buffer
+        (org-gcal-fetch)
+        (org-gcal-refresh-token)
+        (with-current-buffer agenda-buffer (org-agenda-redo)))))
+  (run-at-time t 600 'refresh-agenda))
 
 (req-package imenu
   :config
@@ -384,15 +376,14 @@
   (auto-compile-on-save-mode 1))
 
 (req-package org-projectile
-  :require helm
+  :require (helm)
   :bind (("C-c n p" . org-projectile:template-or-project)
          ("C-c c" . org-capture))
   :config
-  (progn
-    (setq org-projectile:projects-file
-          "~/.emacs.d/projects.org")
-    (setq org-agenda-files (append org-agenda-files (org-projectile:todo-files)))
-    (add-to-list 'org-capture-templates (org-projectile:project-todo-entry "p"))))
+  (setq org-projectile:projects-file
+        "~/.emacs.d/projects.org")
+  (setq org-agenda-files (append org-agenda-files (org-projectile:todo-files)))
+  (add-to-list 'org-capture-templates (org-projectile:project-todo-entry "p")))
 
 ; broken 20150928: cl-no-primary-method: No primary method for %S: gui-backend-set-selection, PRIMARY, #("." 0 1 (fontified t face font-lock-comment-face))Error during redisplay:
 ;(req-package helm-spotify
@@ -401,48 +392,44 @@
 (req-package helm-dash
   :bind (("C-c d" . helm-dash-at-point))
   :init
-  (progn
-    (setq helm-dash-browser-func 'eww)
-    (add-hook 'c-mode-hook
-       (lambda () (setq-local helm-dash-docsets '("C"))))
-    (add-hook 'c++-mode-hook
-       (lambda () (setq-local helm-dash-docsets '("C" "C++"))))
-    (add-hook 'emacs-lisp-mode-hook
-       (lambda () (setq-local helm-dash-docsets '("Emacs Lisp"))))))
+  (setq helm-dash-browser-func 'eww)
+  (add-hook 'c-mode-hook
+     (lambda () (setq-local helm-dash-docsets '("C"))))
+  (add-hook 'c++-mode-hook
+     (lambda () (setq-local helm-dash-docsets '("C" "C++"))))
+  (add-hook 'emacs-lisp-mode-hook
+     (lambda () (setq-local helm-dash-docsets '("Emacs Lisp")))))
 
 (req-package perspective
   :config
-  (progn
-    (custom-set-faces
-     '(persp-selected-face ((t (:foreground "deep sky blue" :weight bold)))))
-    (add-hook 'after-init-hook #'(lambda () (persp-mode 1)))))
+  (custom-set-faces
+   '(persp-selected-face ((t (:foreground "deep sky blue" :weight bold)))))
+  (add-hook 'after-init-hook #'(lambda () (persp-mode 1))))
 
 (req-package persp-projectile)
 
 (req-package tramp
   :config
-  (progn
-    (setq tramp-default-method "ssh")
-    (setq remote-file-name-inhibit-cache nil)
-    (setq tramp-completion-reread-directory-timeout nil)
-    (setq tramp-verbose 0)))
+  (setq tramp-default-method "ssh")
+  (setq remote-file-name-inhibit-cache nil)
+  (setq tramp-completion-reread-directory-timeout nil)
+  (setq tramp-verbose 0))
 
 (req-package flyspell
   :init
-  (progn
-    (dolist (hook '(text-mode-hook message-mode-hook))
-      (add-hook hook (lambda () (flyspell-mode 1))))
-    (dolist (hook '(c-mode-common-hook emacs-lisp-mode-hook latex-mode-hook python-mode-hook html-mode-hook))
-      (add-hook hook (lambda () (flyspell-prog-mode))))
-    (dolist (hook '(change-log-mode-hook log-edit-mode-hook))
-      (add-hook hook (lambda () (flyspell-mode -1))))))
+  (dolist (hook '(text-mode-hook message-mode-hook))
+    (add-hook hook (lambda () (flyspell-mode 1))))
+  (dolist (hook '(c-mode-common-hook emacs-lisp-mode-hook latex-mode-hook python-mode-hook html-mode-hook))
+    (add-hook hook (lambda () (flyspell-prog-mode))))
+  (dolist (hook '(change-log-mode-hook log-edit-mode-hook))
+    (add-hook hook (lambda () (flyspell-mode -1)))))
 
 (req-package whitespace
   :config
-  (progn
-    (setq whitespace-global-modes '(not comint-mode gud-mode gdb-inferior-io-mode))
-    (setq whitespace-style '(face trailing indentation empty space-before-tab space-after-tab))
-    (global-whitespace-mode 1)))
+  (setq whitespace-global-modes '(not comint-mode gud-mode gdb-inferior-io-mode))
+  (setq whitespace-style '(face trailing indentation empty space-before-tab space-after-tab))
+  ;(global-whitespace-mode 1)
+  )
 
 (req-package framemove
   :config
@@ -455,6 +442,10 @@
 (req-package eww
   :config
   (setq browse-url-browser-function 'eww-browse-url))
+
+; (req-package xwidget
+;   :config
+;   (setq browse-url-browser-function 'xwidget-webkit-browse-url))
 
 ;;; End of Packages:
 (req-package-finish)
@@ -558,7 +549,7 @@
                               (interactive)
                               (scroll-up 1)))
   (defun track-mouse (e))
-  (setq mouse-sel-mode t)
+  ;; (setq mouse-sel-mode t) ;; obsolete, use normal mouse modes
   )
 
 ;;; Enable Commands:
