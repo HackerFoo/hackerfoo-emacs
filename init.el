@@ -106,7 +106,8 @@
 (req-package auto-complete)
 
 (req-package projectile
-  :config (projectile-global-mode 1))
+  (projectile-global-mode 1)
+  (setq projectile-enable-caching t))
 
 (req-package helm-projectile
   :require (helm projectile)
@@ -302,10 +303,12 @@
    '(company-tooltip-common-selection ((t (:inherit company-tooltip-selection :weight bold))))
    '(company-tooltip-selection ((t (:inherit company-tooltip :background "steel blue"))))))
 
-(req-package readline-complete
-  :require (company)
-  :config
-  (push 'company-readline company-backends))
+; cause problems with ERC and doesn't work often 20160211
+; (req-package readline-complete
+;   :require (company)
+;   :config
+;   (push 'company-readline company-backends))
+
 ; (add-hook 'rlc-no-readline-hook (lambda () (company-mode -1)))))
 
 ; (req-package company-quickhelp
@@ -426,10 +429,8 @@
 
 (req-package whitespace
   :config
-  (setq whitespace-global-modes '(not comint-mode gud-mode gdb-inferior-io-mode))
-  (setq whitespace-style '(face trailing indentation empty space-before-tab space-after-tab))
-  ;(global-whitespace-mode 1)
-  )
+  (setq whitespace-global-modes '(c-mode c++-mode python-mode makefile-mode))
+  (setq whitespace-style '(face trailing indentation empty space-before-tab space-after-tab)))
 
 (req-package framemove
   :config
