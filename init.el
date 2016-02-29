@@ -133,12 +133,14 @@
     :config
     (exec-path-from-shell-initialize)))
 
-; breaks helm keybindings 20160127
-; (req-package window-purpose
-;   :require (helm)
-;   :config
-;   (setq purpose-preferred-prompt 'helm)
-;   (purpose-mode t))
+(req-package window-purpose
+  :require (helm)
+  :config
+  (setq purpose-preferred-prompt 'helm)
+  ;; redefine purpose-friendly-find-file to ensure it uses helm
+  (defalias 'purpose-friendly-find-file
+    (purpose-ido-caller #'ido-find-file #'helm-find-files))
+  (purpose-mode t))
 
 (req-package golden-ratio
   :config (golden-ratio-mode t))
