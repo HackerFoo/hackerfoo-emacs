@@ -43,7 +43,7 @@
 
 ;;; Packages:
 (req-package smart-tab
-  :config (global-smart-tab-mode t))
+  :config (global-smart-tab-mode 1))
 
 (req-package yasnippet
   :defer 15
@@ -55,7 +55,6 @@
   (yas-global-mode 1))
 
 (req-package helm-config
-  :require (helm)
   :bind (("C-c g" . helm-get-grep)
          ("M-i" . helm-imenu)
          ("M-x" . helm-M-x)
@@ -68,10 +67,6 @@
   (define-key helm-map (kbd "C-c g") 'helm-git-grep-from-helm)
   (setq helm-mode-reverse-history nil)
   (helm-mode 1))
-
-(req-package helm
-  :config
-  (setq helm-mode-reverse-history nil))
 
 (req-package magit
   :bind ("C-x g" . magit-status)
@@ -106,14 +101,13 @@
 (req-package auto-complete)
 
 (req-package projectile
-  (projectile-global-mode 1)
-  (setq projectile-enable-caching t))
+  (projectile-global-mode 1))
+  ;(setq projectile-enable-caching t))
 
 (req-package helm-projectile
   :require (helm projectile)
   :config
   (setq projectile-completion-system 'helm)
-  (setq projectile-enable-caching t)
   (helm-projectile-on))
 
 (req-package sr-speedbar
@@ -134,12 +128,14 @@
     (exec-path-from-shell-initialize)))
 
 (req-package window-purpose
-  :require (helm)
+  :require (helm-config)
   :config
   (setq purpose-preferred-prompt 'helm)
-  ;; redefine purpose-friendly-find-file to ensure it uses helm
+  ;; aliases to ensure window-purpose uses helm
   (defalias 'purpose-friendly-find-file
     (purpose-ido-caller #'ido-find-file #'helm-find-files))
+  (defalias 'purpose-friendly-switch-buffer
+    (purpose-ido-caller #'ido-switch-buffer #'helm-mini))
   (purpose-mode t))
 
 (req-package golden-ratio
@@ -380,15 +376,15 @@
   :config
   (auto-compile-on-save-mode 1))
 
-(req-package org-projectile
-  :require (helm)
-  :bind (("C-c n p" . org-projectile:template-or-project)
-         ("C-c c" . org-capture))
-  :config
-  (setq org-projectile:projects-file
-        "~/.emacs.d/projects.org")
-  (setq org-agenda-files (append org-agenda-files (org-projectile:todo-files)))
-  (add-to-list 'org-capture-templates (org-projectile:project-todo-entry "p")))
+; (req-package org-projectile
+;   :require (helm)
+;   :bind (("C-c n p" . org-projectile:template-or-project)
+;          ("C-c c" . org-capture))
+;   :config
+;   (setq org-projectile:projects-file
+;         "~/.emacs.d/projects.org")
+;   (setq org-agenda-files (append org-agenda-files (org-projectile:todo-files)))
+;   (add-to-list 'org-capture-templates (org-projectile:project-todo-entry "p")))
 
 ; broken 20150928: cl-no-primary-method: No primary method for %S: gui-backend-set-selection, PRIMARY, #("." 0 1 (fontified t face font-lock-comment-face))Error during redisplay:
 ;(req-package helm-spotify
@@ -445,6 +441,9 @@
 (req-package eww
   :config
   (setq browse-url-browser-function 'eww-browse-url))
+
+(req-package ibuffer
+  :bind (("C-x C-b" . ibuffer)))
 
 ; (req-package xwidget
 ;   :config
