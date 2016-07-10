@@ -57,9 +57,7 @@
 (req-package helm-config
   :bind (("C-c g" . helm-get-grep)
          ("M-i" . helm-imenu)
-         ("M-x" . helm-M-x)
-         ("C-x C-f" . helm-find-files)
-         ("C-x b" . helm-mini))
+         ("M-x" . helm-M-x))
   :config
   ;; Invoke `helm-git-grep' from isearch.
   (define-key isearch-mode-map (kbd "C-c g") 'helm-git-grep-from-isearch)
@@ -69,21 +67,23 @@
   (helm-mode 1))
 
 (req-package magit
+  :require (helm)
   :bind ("C-x g" . magit-status)
   :config
-  (setq magit-last-seen-setup-instructions "1.4.0"))
+  (setq magit-last-seen-setup-instructions "1.4.0")
+  (helm-mode 1))
 
-(req-package evernote-mode
-  :bind (("C-c e c" . evernote-create-note)
-         ("C-c e o" . evernote-open-note)
-         ("C-c e s" . evernote-search-notes)
-         ("C-c e S" . evernote-do-saved-search)
-         ("C-c e w" . evernote-write-note)
-         ("C-c e p" . evernote-post-region)
-         ("C-c e b" . evernote-browser))
-  :config
-  (setq evernote-username "hackerfoo") ; optional: you can use this username as default.
-  (setq evernote-enml-formatter-command '("w3m" "-dump" "-I" "UTF8" "-O" "UTF8"))) ; option)
+; (req-package evernote-mode
+;   :bind (("C-c e c" . evernote-create-note)
+;          ("C-c e o" . evernote-open-note)
+;          ("C-c e s" . evernote-search-notes)
+;          ("C-c e S" . evernote-do-saved-search)
+;          ("C-c e w" . evernote-write-note)
+;          ("C-c e p" . evernote-post-region)
+;          ("C-c e b" . evernote-browser))
+;   :config
+;   (setq evernote-username "hackerfoo") ; optional: you can use this username as default.
+;   (setq evernote-enml-formatter-command '("w3m" "-dump" "-I" "UTF8" "-O" "UTF8"))) ; option)
 
 (req-package auto-complete-config
   :require (auto-complete)
@@ -113,8 +113,8 @@
 (req-package sr-speedbar
   :bind (("<f12>" . sr-speedbar-toggle)))
 
-(if (executable-find "w3m")
-  (req-package xcode-document-viewer))
+; (if (executable-find "w3m")
+;   (req-package xcode-document-viewer))
 
 (req-package ensime)
 
@@ -128,7 +128,7 @@
     (exec-path-from-shell-initialize)))
 
 (req-package window-purpose
-  :require (helm-config)
+  :require (helm)
   :config
   (setq purpose-preferred-prompt 'helm)
   ;; aliases to ensure window-purpose uses helm
@@ -553,6 +553,20 @@
   (defun track-mouse (e))
   ;; (setq mouse-sel-mode t) ;; obsolete, use normal mouse modes
   )
+
+(defun toggle-transparency ()
+  (interactive)
+  (let ((alpha (frame-parameter nil 'alpha)))
+    (set-frame-parameter
+     nil 'alpha
+     (if (eql (cond ((numberp alpha) alpha)
+                    ((numberp (cdr alpha)) (cdr alpha))
+                    ;; Also handle undocumented (<active> <inactive>) form.
+                    ((numberp (cadr alpha)) (cadr alpha)))
+              100)
+         '(100 . 100) '(85 . 50)))))
+(global-set-key (kbd "C-c t") 'toggle-transparency)
+(toggle-transparency)
 
 ;;; Enable Commands:
 (put 'upcase-region 'disabled nil)
