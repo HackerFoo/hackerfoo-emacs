@@ -21,6 +21,21 @@
 
 ;;; Initial stuff:
 
+(set-frame-parameter nil 'alpha '(100 . 100))
+(defun toggle-transparency ()
+  (interactive)
+  (let ((alpha (frame-parameter nil 'alpha)))
+    (set-frame-parameter
+     nil 'alpha
+     (if (eql (cond ((numberp alpha) alpha)
+                    ((numberp (cdr alpha)) (cdr alpha))
+                    ;; Also handle undocumented (<active> <inactive>) form.
+                    ((numberp (cadr alpha)) (cadr alpha)))
+              100)
+         '(85 . 75) '(100 . 100)))))
+(global-set-key (kbd "C-c t") 'toggle-transparency)
+(toggle-transparency)
+
 ;; put this here to make sure it loads before org
 (defvar org-replace-disputed-keys t)
 
@@ -38,7 +53,7 @@
 ; (setq use-package-debug t)
 
 (defvar use-rtags t)
-(defvar use-irony t)
+(defvar use-irony nil)
 (defvar use-ycmd nil)
 
 ;;; Packages:
@@ -150,52 +165,55 @@
   :bind (("C-=" . er/expand-region)))
 
 (if use-rtags
-  (req-package rtags
-    :config
-    (defun use-rtags (&optional useFileManager)
-      (and (rtags-executable-find "rc")
-           (cond ((and (not (eq major-mode 'c++-mode))
-                       (not (eq major-mode 'c-mode)))
-                  (rtags-has-filemanager))
-                 (useFileManager (rtags-has-filemanager))
-                 (t (rtags-is-indexed)))))
+  (progn
+    (req-package rtags
+      :config
+      (defun use-rtags (&optional useFileManager)
+        (and (rtags-executable-find "rc")
+             (cond ((and (not (eq major-mode 'c++-mode))
+                         (not (eq major-mode 'c-mode)))
+                    (rtags-has-filemanager))
+                   (useFileManager (rtags-has-filemanager))
+                   (t (rtags-is-indexed)))))
 
-    (defun tags-find-symbol-at-point (&optional prefix)
-      (interactive "P")
-      (if (and (not (rtags-find-symbol-at-point prefix)) rtags-last-request-not-indexed)
-          (gtags-find-tag)))
-    (defun tags-find-references-at-point (&optional prefix)
-      (interactive "P")
-      (if (and (not (rtags-find-references-at-point prefix)) rtags-last-request-not-indexed)
-          (gtags-find-rtag)))
-    (defun tags-find-symbol ()
-      (interactive)
-      (call-interactively (if (use-rtags) 'rtags-find-symbol 'gtags-find-symbol)))
-    (defun tags-find-references ()
-      (interactive)
-      (call-interactively (if (use-rtags) 'rtags-find-references 'gtags-find-rtag)))
-    (defun tags-find-file ()
-      (interactive)
-      (call-interactively (if (use-rtags t) 'rtags-find-file 'gtags-find-file)))
-    (defun tags-imenu ()
-      (interactive)
-      (call-interactively (if (use-rtags t) 'rtags-imenu 'helm-imenu)))
+      (defun tags-find-symbol-at-point (&optional prefix)
+        (interactive "P")
+        (if (and (not (rtags-find-symbol-at-point prefix)) rtags-last-request-not-indexed)
+            (gtags-find-tag)))
+      (defun tags-find-references-at-point (&optional prefix)
+        (interactive "P")
+        (if (and (not (rtags-find-references-at-point prefix)) rtags-last-request-not-indexed)
+            (gtags-find-rtag)))
+      (defun tags-find-symbol ()
+        (interactive)
+        (call-interactively (if (use-rtags) 'rtags-find-symbol 'gtags-find-symbol)))
+      (defun tags-find-references ()
+        (interactive)
+        (call-interactively (if (use-rtags) 'rtags-find-references 'gtags-find-rtag)))
+      (defun tags-find-file ()
+        (interactive)
+        (call-interactively (if (use-rtags t) 'rtags-find-file 'gtags-find-file)))
+      (defun tags-imenu ()
+        (interactive)
+        (call-interactively (if (use-rtags t) 'rtags-imenu 'helm-imenu)))
 
-    (define-key c-mode-base-map (kbd "M-.") (function tags-find-symbol-at-point))
-    (define-key c-mode-base-map (kbd "M-,") (function tags-find-references-at-point))
-    (define-key c-mode-base-map (kbd "M-;") (function tags-find-file))
-    (define-key c-mode-base-map (kbd "C-.") (function tags-find-symbol))
-    (define-key c-mode-base-map (kbd "C-,") (function tags-find-references))
-    (define-key c-mode-base-map (kbd "C-<") (function rtags-find-virtuals-at-point))
-    (define-key c-mode-base-map (kbd "M-i") (function tags-imenu))
+      (define-key c-mode-base-map (kbd "M-.") (function tags-find-symbol-at-point))
+      (define-key c-mode-base-map (kbd "M-,") (function tags-find-references-at-point))
+      (define-key c-mode-base-map (kbd "M-;") (function tags-find-file))
+      (define-key c-mode-base-map (kbd "C-.") (function tags-find-symbol))
+      (define-key c-mode-base-map (kbd "C-,") (function tags-find-references))
+      (define-key c-mode-base-map (kbd "C-<") (function rtags-find-virtuals-at-point))
+      (define-key c-mode-base-map (kbd "M-i") (function tags-imenu))
 
-    (define-key global-map (kbd "M-.") (function tags-find-symbol-at-point))
-    (define-key global-map (kbd "M-,") (function tags-find-references-at-point))
-    (define-key global-map (kbd "M-;") (function tags-find-file))
-    (define-key global-map (kbd "C-.") (function tags-find-symbol))
-    (define-key global-map (kbd "C-,") (function tags-find-references))
-    (define-key global-map (kbd "C-<") (function rtags-find-virtuals-at-point))
-    (define-key global-map (kbd "M-i") (function tags-imenu))))
+      (define-key global-map (kbd "M-.") (function tags-find-symbol-at-point))
+      (define-key global-map (kbd "M-,") (function tags-find-references-at-point))
+      (define-key global-map (kbd "M-;") (function tags-find-file))
+      (define-key global-map (kbd "C-.") (function tags-find-symbol))
+      (define-key global-map (kbd "C-,") (function tags-find-references))
+      (define-key global-map (kbd "C-<") (function rtags-find-virtuals-at-point))
+      (define-key global-map (kbd "M-i") (function tags-imenu)))
+    (req-package flycheck-rtags)
+    (req-package company-rtags)))
 
 (if (not use-rtags)
   (req-package ggtags
@@ -449,8 +467,16 @@
 ;   :config
 ;   (setq browse-url-browser-function 'xwidget-webkit-browse-url))
 
+(req-package z3-mode
+  :mode "\\.rs\\'")
+
 ;;; End of Packages:
 (req-package-finish)
+
+;;; Load other elisp files
+
+;; Open .v files with Proof General's Coq mode
+(load "~/.emacs.d/lisp/PG/generic/proof-site")
 
 ;;; UI options:
 (setq inhibit-splash-screen t)
@@ -553,20 +579,6 @@
   (defun track-mouse (e))
   ;; (setq mouse-sel-mode t) ;; obsolete, use normal mouse modes
   )
-
-(defun toggle-transparency ()
-  (interactive)
-  (let ((alpha (frame-parameter nil 'alpha)))
-    (set-frame-parameter
-     nil 'alpha
-     (if (eql (cond ((numberp alpha) alpha)
-                    ((numberp (cdr alpha)) (cdr alpha))
-                    ;; Also handle undocumented (<active> <inactive>) form.
-                    ((numberp (cadr alpha)) (cadr alpha)))
-              100)
-         '(100 . 100) '(85 . 50)))))
-(global-set-key (kbd "C-c t") 'toggle-transparency)
-(toggle-transparency)
 
 ;;; Enable Commands:
 (put 'upcase-region 'disabled nil)
