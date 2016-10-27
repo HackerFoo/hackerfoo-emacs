@@ -23,6 +23,7 @@
 
 (set-frame-parameter nil 'alpha '(100 . 100))
 (defun toggle-transparency ()
+  "Toggle transparency."
   (interactive)
   (let ((alpha (frame-parameter nil 'alpha)))
     (set-frame-parameter
@@ -211,8 +212,17 @@
       (define-key global-map (kbd "C-.") (function tags-find-symbol))
       (define-key global-map (kbd "C-,") (function tags-find-references))
       (define-key global-map (kbd "C-<") (function rtags-find-virtuals-at-point))
-      (define-key global-map (kbd "M-i") (function tags-imenu)))
-    (req-package flycheck-rtags)
+      (define-key global-map (kbd "M-i") (function tags-imenu))
+      (setq rtags-tramp-enabled t))
+    (req-package flycheck-rtags
+      :config
+      (progn
+        (defun my-flycheck-rtags-setup ()
+          (flycheck-select-checker 'rtags)
+          (setq-local flycheck-highlighting-mode nil) ;; RTags creates more accurate overlays.
+          (setq-local flycheck-check-syntax-automatically nil))
+        ;; c-mode-common-hook is also called by c++-mode
+        (add-hook 'c-mode-common-hook #'my-flycheck-rtags-setup)))
     (req-package company-rtags)))
 
 (if (not use-rtags)
