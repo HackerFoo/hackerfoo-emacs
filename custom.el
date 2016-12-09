@@ -18,7 +18,7 @@
  '(org-startup-truncated nil)
  '(package-selected-packages
    (quote
-    (z3-mode htmlize ox-reveal exwm xwidgete elfeed helm-ag matrix-client window-purpose sr-speedbar smart-tab smart-mode-line shell-switcher rtags req-package persp-projectile org-projectile org-gcal magit irony-eldoc helm-projectile helm-dash gruber-darker-theme golden-ratio framemove flycheck-pos-tip flycheck-irony flycheck-color-mode-line expand-region ensime diff-hl company-irony auto-complete auto-compile)))
+    (scad-mode scad-preview z3-mode htmlize ox-reveal exwm xwidgete elfeed helm-ag matrix-client window-purpose sr-speedbar smart-tab smart-mode-line shell-switcher rtags req-package persp-projectile org-projectile org-gcal magit irony-eldoc helm-projectile helm-dash gruber-darker-theme golden-ratio framemove flycheck-pos-tip flycheck-irony flycheck-color-mode-line expand-region ensime diff-hl company-irony auto-complete auto-compile)))
  '(password-cache-expiry nil)
  '(rtags-enable-unsaved-reparsing t)
  '(rtags-periodic-reparse-timeout 1.0)
