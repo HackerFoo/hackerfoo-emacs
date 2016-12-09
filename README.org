@@ -1,0 +1,13 @@
+* INSTRUCTIONS
+This configuration is used with Emacs 25, but should still work with Emacs 24.
+
+1. Use =M-x list-packages= to install [[https://github.com/edvorg/req-package][req-package]].
+2. =mv ~/.emacs ~/.emacs-old=
+3. =git clone https://github.com/edvorg/req-package.git ~/.emacs=
+4. Load =~/.emacs/init.el= and =M-x eval-buffer=
+  - This will download many packages and compile them
+5. =M-x byte-compile-file= and select =~/.emacs/init.el=
+6. Restart Emacs
+
+* NOTE
+You will want to change the font in custom.el if you do not have Inconsolata installed. I use Menlo on Mac OS X.
