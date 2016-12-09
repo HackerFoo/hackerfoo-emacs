@@ -486,7 +486,8 @@
 ;;; Load other elisp files
 
 ;; Open .v files with Proof General's Coq mode
-(load "~/.emacs.d/lisp/PG/generic/proof-site")
+(when-file "~/.emacs.d/lisp/PG/generic/proof-site"
+  (load "~/.emacs.d/lisp/PG/generic/proof-site"))
 
 ;;; UI options:
 (setq inhibit-splash-screen t)
